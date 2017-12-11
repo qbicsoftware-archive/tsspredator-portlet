@@ -1,6 +1,8 @@
 package life.qbic.view.firstImplementation;
 
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.*;
+import life.qbic.model.Globals;
 import life.qbic.model.beans.AnnotationFileBean;
 import life.qbic.model.beans.FastaFileBean;
 import life.qbic.presenter.Presenter;
@@ -15,6 +17,7 @@ public class GenomeDataPanel extends DataPanel {
         super(presenter);
         numberOfDatasetsBox.setCaption("Select number of Genomes");
         contentLayout.addComponents(numberOfDatasetsBox, numberOfReplicatesBox, datasetAccordion);
+        wrapperLayout.addComponents(new InfoBar(Globals.GENOME_DATA_SETTINGS_INFO), contentLayout);
 
     }
 
@@ -39,10 +42,10 @@ public class GenomeDataPanel extends DataPanel {
             gffGrid.addColumn(AnnotationFileBean::getSizeInKB).setCaption("Size (kB)");
             gffGrid.addStyleName("my-file-grid");
             genomeData.addComponents(new HorizontalLayout(nameField, idField), fastaGrid, gffGrid);
-            this.tab.addComponents(new InfoBar("TODO: Add GenomeTab info here!"),genomeData, new Label("RNA-seq graph files:"), replicatesSheet);
+            this.tab.addComponents(new InfoBar(Globals.GENOME_TAB_INFO),genomeData, new Label("<b>RNA-seq graph files for this condition:</b>", ContentMode.HTML), replicatesSheet);
 
             //<-- DEBUG
-           List<FastaFileBean> fastaFileBeanList = new LinkedList<>();
+            List<FastaFileBean> fastaFileBeanList = new LinkedList<>();
             for (int i = 0; i < 10; i++) {
                 FastaFileBean bean = new FastaFileBean();
                 bean.setName("Test Fasta " + i);
