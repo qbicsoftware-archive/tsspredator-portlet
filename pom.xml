@@ -16,6 +16,9 @@
 		<vaadin.plugin.version>8.1.5</vaadin.plugin.version>
 		<liferay.version>6.2.5</liferay.version>
 		<liferay.maven.plugin.version>6.2.5</liferay.maven.plugin.version>
+		<!-- If there are no local customizations, this can also be "fetch" or "cdn" -->
+		<!-- This might be a problematic line -->
+		<vaadin.widgetset.mode>local</vaadin.widgetset.mode>
 	</properties>
 	<repositories>
 		<repository>

@@ -42,7 +42,7 @@ public class MyUI extends UI {
                             + portletContextName
                             + ".<br>This portal has "
                             + numOfRegisteredUsers
-                            + " registered users (according to the data returned by Liferay API call).<br> This is build 17. Enjoy your stay!",
+                            + " registered users (according to the data returned by Liferay API call).<br> This is build no. 18. Enjoy your stay!",
                     ContentMode.HTML);
         } else {
             label = new Label("You are currently in a local testing mode. No Liferay Portlet context found.");
