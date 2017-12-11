@@ -13,7 +13,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.WrappedPortletSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -22,9 +21,9 @@ import life.qbic.portal.liferayandvaadinhelpers.main.LiferayAndVaadinUtils;
 @Theme("mytheme")
 @SuppressWarnings("serial")
 @Widgetset("life.qbic.AppWidgetSet")
-public class MyPortletUI extends UI {
+public class MyUI extends UI {
 
-    private static Log log = LogFactoryUtil.getLog(MyPortletUI.class);
+    private static Log log = LogFactoryUtil.getLog(MyUI.class);
 
     @Override
     protected void init(VaadinRequest request) {
@@ -43,7 +42,7 @@ public class MyPortletUI extends UI {
                             + portletContextName
                             + ".<br>This portal has "
                             + numOfRegisteredUsers
-                            + " registered users (according to the data returned by Liferay API call).",
+                            + " registered users (according to the data returned by Liferay API call).<br> Enjoy your stay!",
                     ContentMode.HTML);
         } else {
             label = new Label("You are currently in a local testing mode. No Liferay Portlet context found.");
