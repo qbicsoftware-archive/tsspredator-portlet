@@ -32,7 +32,7 @@
 		<portlet-info>
 			<title>TSSpredator</title>
 			<short-title>TSSpredator</short-title>
-			<keywords>Vaadin 7</keywords>
+			<keywords>Vaadin 8</keywords>
 		</portlet-info>
 
 		<security-role-ref>
