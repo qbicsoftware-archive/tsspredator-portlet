@@ -3,19 +3,22 @@
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>life.qbic</groupId>
-	<artifactId>portlet-base</artifactId>
+	<artifactId>tsspredator</artifactId>
 	<version>1.1</version>
-	<name>Portlet Template</name>
+	<name>TSSpredator</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jetty.plugin.version>9.3.9.v20160517</jetty.plugin.version>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<vaadin.version>7.7.8</vaadin.version>
-		<vaadin.plugin.version>7.7.8</vaadin.plugin.version>
+		<vaadin.version>8.1.5</vaadin.version>
+		<vaadin.plugin.version>8.1.5</vaadin.plugin.version>
 		<liferay.version>6.2.5</liferay.version>
 		<liferay.maven.plugin.version>6.2.5</liferay.maven.plugin.version>
+		<!-- If there are no local customizations, this can also be "fetch" or "cdn" -->
+		<!-- This might be a problematic line -->
+		<vaadin.widgetset.mode>local</vaadin.widgetset.mode>
 	</properties>
 	<repositories>
 		<repository>
@@ -244,6 +247,7 @@
 							<goal>resources</goal>
 							<goal>update-theme</goal>
 							<goal>update-widgetset</goal>
+							<!-- Comment out compile-theme goal to use on-the-fly theme compilation -->
 							<goal>compile-theme</goal>
 							<goal>compile</goal>
 						</goals>

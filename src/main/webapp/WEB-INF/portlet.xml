@@ -7,15 +7,15 @@
 	version="2.0">
 
 	<portlet>
-		<description>This is a template of a QBiC portlet</description>
-		<portlet-name>Portlet Template</portlet-name>
-		<display-name>Portlet Template</display-name>
+		<description>This is a tool for the prediction of TSS from dRNA-seq Data</description>
+		<portlet-name>TSSpredator</portlet-name>
+		<display-name>TSSpredator</display-name>
 
 		<portlet-class>com.vaadin.server.VaadinPortlet</portlet-class>
 
 		<init-param>
 			<name>UI</name>
-			<value>life.qbic.MyPortletUI</value>
+			<value>life.qbic.MyUI</value>
 		</init-param>
 
 		<init-param>
@@ -30,9 +30,9 @@
 
 
 		<portlet-info>
-			<title>Portlet Template</title>
-			<short-title>Portlet Template</short-title>
-			<keywords>Vaadin 7</keywords>
+			<title>TSSpredator</title>
+			<short-title>TSSpredator</short-title>
+			<keywords>Vaadin 8</keywords>
 		</portlet-info>
 
 		<security-role-ref>
