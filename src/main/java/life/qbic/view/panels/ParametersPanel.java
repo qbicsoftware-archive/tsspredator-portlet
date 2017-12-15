@@ -20,12 +20,13 @@ public class ParametersPanel extends CustomComponent {
     private Panel parametersPanel;
     private VerticalLayout contentLayout;
     RadioButtonGroup<String> presetSelection;
-    private Button presetInfoButton;
+    private Button presetInfo;
     //Normalization part
     private VerticalLayout normalizationLayout;
     ParameterSetter normalizationPercentile;
     ParameterSetter enrichmentNormalizationPercentile;
     CheckBox writeNormalizedGraphs;
+    private Button writeNormalizedInfo;
 
     //Pre-prediction part
     private VerticalLayout prePredictionLayout;
@@ -37,10 +38,12 @@ public class ParametersPanel extends CustomComponent {
     //Post-prediction part
     private VerticalLayout postPredictionLayout;
     ComboBox<String> clusterMethod;
+    private Button clusterMethodInfo;
     ParameterSetter clusteringDistance;
     ParameterSetter crossDatasetShift;
     ParameterSetter crossReplicateShift;
     ComboBox<Integer> matchingReplicates;
+    private Button matchingReplicatesInfo;
     ParameterSetter utrLength;
     ParameterSetter antisenseUtrLength;
 
@@ -54,18 +57,20 @@ public class ParametersPanel extends CustomComponent {
         Panel panel = new Panel();
         contentLayout = new VerticalLayout();
 
-        presetSelection = new RadioButtonGroup<>("Choose Parameter Preset");
+        presetSelection = new RadioButtonGroup<>("<b>Choose Parameter Preset:</b>");
+        presetSelection.setCaptionAsHtml(true);
         //TODO: Add some kind of separator between Presets and "Custom"
         presetSelection.setItems("Very Specific", "More Specific", "Default", "More Sensitive", "Very Sensitive", Globals.PARAMETERS_CUSTOM);
+        presetSelection.addStyleName("my-radio-button-group");
         //Setup infoButton with helpGraphic as Tooltip
-        presetInfoButton = new Button(VaadinIcons.INFO_CIRCLE);
-        presetInfoButton.addStyleNames(
+        presetInfo = new Button(VaadinIcons.INFO_CIRCLE);
+        presetInfo.addStyleNames(
                 ValoTheme.BUTTON_ICON_ONLY,
                 ValoTheme.BUTTON_BORDERLESS,
                 ValoTheme.BUTTON_ICON_ALIGN_TOP,
                 ValoTheme.BUTTON_SMALL);
-        presetInfoButton.setDescription(
-                "<img src=\"" + Globals.SENSITIVITY_SPECIFICITY_IMAGE + "\" style=\"width: 75%; height: 75%\"/>", ContentMode.HTML);
+        presetInfo.setDescription(
+                Globals.SENSITIVITY_SPECIFICITY_TEXT + "<br><br><img src=\"" + Globals.SENSITIVITY_SPECIFICITY_IMAGE + "\" style=\"width: 75%; height: 75%\"/>", ContentMode.HTML);
         setupPresetListeners();
         createParameterLayouts();
         contentLayout.addComponents(new InfoBar(Globals.PARAMETER_INFO), normalizationLayout, prePredictionLayout, postPredictionLayout);
@@ -93,6 +98,25 @@ public class ParametersPanel extends CustomComponent {
                     break;
                 case Globals.PARAMETERS_CUSTOM:
                     presenter.setPreset(null);
+            }
+            if (vce.getValue().equals(Globals.PARAMETERS_CUSTOM)) {
+                stepHeight.removeStyleName("non-custom-parameter");
+                stepHeightReduction.removeStyleName("non-custom-parameter");
+                stepFactor.removeStyleName("non-custom-parameter");
+                stepFactorReduction.removeStyleName("non-custom-parameter");
+                enrichmentFactor.removeStyleName("non-custom-parameter");
+                processingSiteFactor.removeStyleName("non-custom-parameter");
+                stepLength.removeStyleName("non-custom-parameter");
+                baseHeight.removeStyleName("non-custom-parameter");
+            } else {
+                stepHeight.addStyleName("non-custom-parameter");
+                stepHeightReduction.addStyleName("non-custom-parameter");
+                stepFactor.addStyleName("non-custom-parameter");
+                stepFactorReduction.addStyleName("non-custom-parameter");
+                enrichmentFactor.addStyleName("non-custom-parameter");
+                processingSiteFactor.addStyleName("non-custom-parameter");
+                stepLength.addStyleName("non-custom-parameter");
+                baseHeight.addStyleName("non-custom-parameter");
             }
             presenter.applyPresetParameters();
         });
@@ -152,8 +176,7 @@ public class ParametersPanel extends CustomComponent {
             layout = new VerticalLayout();
             layout.addComponents(new HorizontalLayout(slider, infoButton), valueDisplay);
             layout.setComponentAlignment(valueDisplay, Alignment.BOTTOM_CENTER);
-            layout.addStyleNames("layout-with-border");
-            layout.setHeight(75, Unit.PERCENTAGE);
+            layout.addStyleNames("parameter-setter");
             setCompositionRoot(layout);
         }
     }
@@ -167,7 +190,17 @@ public class ParametersPanel extends CustomComponent {
         enrichmentNormalizationPercentile = new ParameterSetter(
                 "Enrichment Normalization Percentile", 0, 1, 1,
                 Globals.ENRICHMENT_NORMALIZATION_PERCENTILE_TEXT, "");
-        writeNormalizedGraphs = new CheckBox("Write Normalized Graph Files");
+        writeNormalizedGraphs = new CheckBox("<b>Write Normalized Graph Files</b>");
+        writeNormalizedGraphs.setCaptionAsHtml(true);
+        writeNormalizedInfo = new Button(VaadinIcons.INFO_CIRCLE);
+        writeNormalizedInfo.addStyleNames(
+                ValoTheme.BUTTON_ICON_ONLY,
+                ValoTheme.BUTTON_BORDERLESS,
+                ValoTheme.BUTTON_ICON_ALIGN_TOP,
+                ValoTheme.BUTTON_SMALL);
+        writeNormalizedInfo.setDescription(
+                Globals.WRITE_GRAPHS_TEXT, ContentMode.HTML);
+
 
         //Pre-Prediction Part
 
@@ -205,6 +238,14 @@ public class ParametersPanel extends CustomComponent {
         //Post-prediction Part
         clusterMethod = new ComboBox<>("Clustering Method");
         clusterMethod.setItems(Globals.CLUSTER_METHOD_HIGHEST, Globals.CLUSTER_METHOD_FIRST);
+        clusterMethodInfo = new Button(VaadinIcons.INFO_CIRCLE);
+        clusterMethodInfo.addStyleNames(
+                ValoTheme.BUTTON_ICON_ONLY,
+                ValoTheme.BUTTON_BORDERLESS,
+                ValoTheme.BUTTON_ICON_ALIGN_TOP,
+                ValoTheme.BUTTON_SMALL);
+        clusterMethodInfo.setDescription(
+                Globals.CLUSTER_METHOD_INFO, ContentMode.HTML);
         clusteringDistance = new ParameterSetter("TSS Clustering Distance", 0, 3, 0,
                 Globals.CLUSTERING_DISTANCE_TEXT, "");
 
@@ -216,6 +257,13 @@ public class ParametersPanel extends CustomComponent {
         matchingReplicates = new ComboBox<>("Matching Replicates");
         matchingReplicates.setItems(IntStream.rangeClosed(1, presenter.getNumberOfReplicates())
                 .boxed().collect(Collectors.toList()));
+        matchingReplicatesInfo = new Button(VaadinIcons.INFO_CIRCLE);
+        matchingReplicatesInfo.addStyleNames(
+                ValoTheme.BUTTON_ICON_ONLY,
+                ValoTheme.BUTTON_BORDERLESS,
+                ValoTheme.BUTTON_ICON_ALIGN_TOP,
+                ValoTheme.BUTTON_SMALL);
+        matchingReplicatesInfo.setDescription(Globals.MATCHING_REPLICATES_TEXT, ContentMode.HTML);
         HorizontalLayout utrLengths = new HorizontalLayout();
         utrLength = new ParameterSetter("UTR length", 0, 1000, 0,
                 Globals.UTR_LENGTH_TEXT, "");
@@ -227,20 +275,31 @@ public class ParametersPanel extends CustomComponent {
         normalizationLayout = new VerticalLayout(
                 new Label("<b>Normalization</b>", ContentMode.HTML),
                 new InfoBar(Globals.NORMALIZATION_INFO),
-                new HorizontalLayout(normalizationPercentile, enrichmentNormalizationPercentile),
-                writeNormalizedGraphs);
+                new HorizontalLayout(writeNormalizedGraphs, writeNormalizedInfo),
+                new HorizontalLayout(normalizationPercentile, enrichmentNormalizationPercentile));
+        Label adjustByHand = new Label("<b>Adjust Parameters by Hand:</b>", ContentMode.HTML);
+        adjustByHand.setStyleName("v-caption");
+        VerticalLayout predictionParametersLayout = new VerticalLayout(
+                adjustByHand,
+                new HorizontalLayout(stepHeight, stepHeightReduction, stepFactor, stepFactorReduction),
+                new HorizontalLayout(enrichmentFactor, processingSiteFactor, stepLength, baseHeight));
+        predictionParametersLayout.addStyleNames("prediction-parameters-layout");
+        predictionParametersLayout.setMargin(false);
         prePredictionLayout = new VerticalLayout(
                 new Label("<b>Pre-prediction</b>", ContentMode.HTML),
                 new InfoBar(Globals.PRE_PREDICTION_INFO),
-                new HorizontalLayout(presetSelection, presetInfoButton),
-                new HorizontalLayout(stepHeight, stepHeightReduction, stepFactor, stepFactorReduction),
-                new HorizontalLayout(enrichmentFactor, processingSiteFactor, stepLength, baseHeight));
+                new HorizontalLayout(new HorizontalLayout(presetSelection, presetInfo),
+                        predictionParametersLayout));
         postPredictionLayout = new VerticalLayout(
                 new Label("<b>Post-Prediction</b>", ContentMode.HTML),
                 new InfoBar(Globals.POST_PREDICTION_INFO),
-                new HorizontalLayout(matchingReplicates, utrLengths),
+                new HorizontalLayout(matchingReplicates, matchingReplicatesInfo, utrLengths),
                 new HorizontalLayout(crossDatasetShift, crossReplicateShift),
-                new HorizontalLayout(clusterMethod, clusteringDistance));
+                new HorizontalLayout(clusterMethod, clusterMethodInfo, clusteringDistance));
+
+        normalizationLayout.addStyleName("parameter-section");
+        prePredictionLayout.addStyleName("parameter-section");
+        postPredictionLayout.addStyleName("parameter-section");
 
     }
 

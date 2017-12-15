@@ -59,47 +59,47 @@
     top: -0.25cm;
 
   }
-/*
-  .stepHeightInfo:hover:after {
-    content: url(css_resources/Step_Height_2.svg);
-    display: block;
-  }
+  /*
+    .stepHeightInfo:hover:after {
+      content: url(css_resources/Step_Height_2.svg);
+      display: block;
+    }
 
-  .stepHeightReductionInfo:hover:after {
-    content: url(css_resources/Step_Height_2.svg);
-    display: block;
-  }
+    .stepHeightReductionInfo:hover:after {
+      content: url(css_resources/Step_Height_2.svg);
+      display: block;
+    }
 
-  .stepFactorInfo:hover:after {
-    content: url(css_resources/Step_Factor_2.svg);
-    display: block;
-  }
+    .stepFactorInfo:hover:after {
+      content: url(css_resources/Step_Factor_2.svg);
+      display: block;
+    }
 
-  .stepFactorReductionInfo:hover:after {
-    content: url(css_resources/Step_Factor_2.svg);
-    display: block;
-  }
+    .stepFactorReductionInfo:hover:after {
+      content: url(css_resources/Step_Factor_2.svg);
+      display: block;
+    }
 
-  .enrichmentFactorInfo:hover:after {
-    content: url(css_resources/Enrichment_Factor_2.svg);
-    display: block;
-  }
+    .enrichmentFactorInfo:hover:after {
+      content: url(css_resources/Enrichment_Factor_2.svg);
+      display: block;
+    }
 
-  .processingSiteFactorInfo:hover:after {
-    content: url(css_resources/Dummy.svg);
-    display: block;
-  }
+    .processingSiteFactorInfo:hover:after {
+      content: url(css_resources/Dummy.svg);
+      display: block;
+    }
 
-  .stepLengthInfo:hover:after {
-    content: url(css_resources/Dummy.svg);
-    display: block;
-  }
+    .stepLengthInfo:hover:after {
+      content: url(css_resources/Dummy.svg);
+      display: block;
+    }
 
-  .baseHeightInfo:hover:after {
-    content: url(css_resources/Dummy.svg);
-    display: block;
-  }
-*/
+    .baseHeightInfo:hover:after {
+      content: url(css_resources/Dummy.svg);
+      display: block;
+    }
+  */
   .my-file-grid {
     height: 5cm !important;
   }
@@ -118,9 +118,10 @@
     color: royalblue;
   }
 
-  .layout-with-border {
-    //border-radius: 10px;
-    //background-color: lightblue;
+  .parameter-setter {
+    height: 3cm;
+    margin: 0;
+    padding: 0;
 
   }
 
@@ -136,19 +137,44 @@
     background-color: white;
     max-width: 100cm;
     max-height: 100cm;
-    width: auto!important;
-    height: auto!important;
+    width: auto !important;
+    height: auto !important;
     padding: 0.5cm 0.5cm;
   }
 
   .v-tooltip-text {
     color: black;
-    max-width: 100cm!important;
-    max-height: 100cm!important;
+    max-width: 100cm !important;
+    max-height: 100cm !important;
     width: auto;
     height: auto;
 
   }
 
+  .my-radio-button-group {
+
+    .v-radiobutton {
+      height: 0.75cm;
+      font-weight: bold;
+    }
+  }
+
+  .prediction-parameters-layout {
+    margin: 0;
+    position: absolute;
+    right: 0;
+  }
+
+  .non-custom-parameter {
+    opacity: 0.6;
+  }
+
+  .parameter-section {
+    background-color: rgba(211, 211, 211, 0.1);
+    border: 2px solid rgba(211, 211, 211, 0.5);
+    border-radius: 8px;
+    padding: 0.5cm;
+
+  }
 
 }

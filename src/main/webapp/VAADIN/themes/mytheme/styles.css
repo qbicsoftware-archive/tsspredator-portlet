@@ -15073,6 +15073,12 @@ div.v-layout.v-horizontal.v-widget {
 	color: royalblue;
 }
 
+.mytheme .parameter-setter {
+	height: 3cm;
+	margin: 0;
+	padding: 0;
+}
+
 .mytheme .my-info-bar {
 	border-left: 6px solid #197de1;
 	background: #e6f0ff;
@@ -15096,4 +15102,26 @@ div.v-layout.v-horizontal.v-widget {
 	max-height: 100cm !important;
 	width: auto;
 	height: auto;
+}
+
+.mytheme .my-radio-button-group .v-radiobutton {
+	height: 0.75cm;
+	font-weight: bold;
+}
+
+.mytheme .prediction-parameters-layout {
+	margin: 0;
+	position: absolute;
+	right: 0;
+}
+
+.mytheme .non-custom-parameter {
+	opacity: 0.6;
+}
+
+.mytheme .parameter-section {
+	background-color: rgba(211, 211, 211, 0.1);
+	border: 2px solid rgba(211, 211, 211, 0.5);
+	border-radius: 8px;
+	padding: 0.5cm;
 }

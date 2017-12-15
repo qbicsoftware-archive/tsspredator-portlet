@@ -78,7 +78,9 @@ public class Globals {
     //Parameter Tooltip Texts
     public static final String NORMALIZATION_PERCENTILE_TEXT = "This text should describe the parameter";
     public static final String ENRICHMENT_NORMALIZATION_PERCENTILE_TEXT = "";
-    public static final String WRITE_GRAPHS_TEXT = "";
+    public static final String WRITE_GRAPHS_TEXT = "This is the info text for the write graphs checkbox!";
+    public static final String SENSITIVITY_SPECIFICITY_TEXT = "In case you're wondering what <i>Sensitivity</i> " +
+            "and <i>Specificity</i> are:";
     public static final String STEP_HEIGHT_TEXT = "";
     public static final String STEP_HEIGHT_REDUCTION_TEXT = "";
     public static final String STEP_FACTOR_TEXT = "This text should be displayed atop the image";
@@ -91,6 +93,7 @@ public class Globals {
     public static final String CROSS_DATASET_SHIFT_TEXT = "";
     public static final String CROSS_REPLICATE_SHIFT_TEXT = "";
     public static final String MATCHING_REPLICATES_TEXT = "";
+    public static final String CLUSTER_METHOD_INFO = "";
     public static final String UTR_LENGTH_TEXT = "";
     public static final String ANTISENSE_UTR_LENGTH_TEXT = "";
 
@@ -98,7 +101,7 @@ public class Globals {
     //Parameter Tooltip Images
     public static final String STEP_HEIGHT_IMAGE = "../VAADIN/images/Step_Height_2.svg";
     public static final String STEP_FACTOR_IMAGE = "../VAADIN/images/Step_Factor_2.svg";
-    public static final String ENRICHMENT_FACTOR_IMAGE = "../VAADIN/images/Enrichment_Factor.svg";
+    public static final String ENRICHMENT_FACTOR_IMAGE = "../VAADIN/images/Enrichment_Factor_2.svg";
     public static final String SENSITIVITY_SPECIFICITY_IMAGE = "../VAADIN/images/High_SE&SP_Bar.svg";
 
 
