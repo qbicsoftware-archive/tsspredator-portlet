@@ -1,4 +1,4 @@
-package life.qbic.view.firstImplementation;
+package life.qbic.view.panels;
 
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.ui.dnd.DropEffect;

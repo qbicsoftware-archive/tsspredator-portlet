@@ -12,9 +12,9 @@ import life.qbic.model.config.ConfigFile;
 import life.qbic.model.config.Genome;
 import life.qbic.model.config.Replicate;
 import life.qbic.view.AccordionLayoutMain;
-import life.qbic.view.firstImplementation.ConditionDataPanel;
-import life.qbic.view.firstImplementation.DataPanel;
-import life.qbic.view.firstImplementation.GenomeDataPanel;
+import life.qbic.view.panels.ConditionDataPanel;
+import life.qbic.view.panels.DataPanel;
+import life.qbic.view.panels.GenomeDataPanel;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -140,6 +140,9 @@ public class Presenter {
                                 removeReplicates(-delta);
                             //Update view
                             view.getGenomeDataPanel().updateAccordion(getNumberOfDatasets(), oldReplicateCount);
+                            //Update range of the 'matching replicates' slider in the ParametersPanel
+                            view.getParametersPanel().getMatchingReplicates().setItems(IntStream.rangeClosed(1, getNumberOfReplicates())
+                                    .boxed().collect(Collectors.toList()));
                         });
 
         configFileBinder.forField(view.getConditionDataPanel().getNumberOfReplicatesBox())
@@ -176,6 +179,9 @@ public class Presenter {
 
                                 boolean isModeConditions = s.equals(Globals.COMPARE_CONDITIONS);
                                 view.updateDataPanelMode(isModeConditions);
+                                view.getParametersPanel().getCrossDatasetShift().setCaption(
+                                        isModeConditions ? "Allowed Cross-Condition Shift" : "Allowed Cross-Genome Shift"
+                                );
                                 configFile.setModeConditions(isModeConditions);
                                 configFile.setNumberOfDatasets(1);
                                 configFile.setNumberOfReplicates(1);

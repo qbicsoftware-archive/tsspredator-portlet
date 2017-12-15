@@ -75,4 +75,31 @@ public class Globals {
     public static final String PRE_PREDICTION_INFO = "TODO";
     public static final String POST_PREDICTION_INFO = "TODO";
 
+    //Parameter Tooltip Texts
+    public static final String NORMALIZATION_PERCENTILE_TEXT = "This text should describe the parameter";
+    public static final String ENRICHMENT_NORMALIZATION_PERCENTILE_TEXT = "";
+    public static final String WRITE_GRAPHS_TEXT = "";
+    public static final String STEP_HEIGHT_TEXT = "";
+    public static final String STEP_HEIGHT_REDUCTION_TEXT = "";
+    public static final String STEP_FACTOR_TEXT = "This text should be displayed atop the image";
+    public static final String STEP_FACTOR_REDUCTION_TEXT = "";
+    public static final String ENRICHMENT_FACTOR_TEXT = "";
+    public static final String PROCESSING_SITE_FACTOR_TEXT = "";
+    public static final String STEP_LENGTH_TEXT = "";
+    public static final String BASE_HEIGHT_TEXT = "";
+    public static final String CLUSTERING_DISTANCE_TEXT = "";
+    public static final String CROSS_DATASET_SHIFT_TEXT = "";
+    public static final String CROSS_REPLICATE_SHIFT_TEXT = "";
+    public static final String MATCHING_REPLICATES_TEXT = "";
+    public static final String UTR_LENGTH_TEXT = "";
+    public static final String ANTISENSE_UTR_LENGTH_TEXT = "";
+
+
+    //Parameter Tooltip Images
+    public static final String STEP_HEIGHT_IMAGE = "../VAADIN/images/Step_Height_2.svg";
+    public static final String STEP_FACTOR_IMAGE = "../VAADIN/images/Step_Factor_2.svg";
+    public static final String ENRICHMENT_FACTOR_IMAGE = "../VAADIN/images/Enrichment_Factor.svg";
+    public static final String SENSITIVITY_SPECIFICITY_IMAGE = "../VAADIN/images/High_SE&SP_Bar.svg";
+
+
 }

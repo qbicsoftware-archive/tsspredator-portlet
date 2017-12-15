@@ -131,4 +131,24 @@
     margin: 5px 15px 5px 20px;
     border-right: 15px solid white;
   }
+
+  .v-tooltip {
+    background-color: white;
+    max-width: 100cm;
+    max-height: 100cm;
+    width: auto!important;
+    height: auto!important;
+    padding: 0.5cm 0.5cm;
+  }
+
+  .v-tooltip-text {
+    color: black;
+    max-width: 100cm!important;
+    max-height: 100cm!important;
+    width: auto;
+    height: auto;
+
+  }
+
+
 }

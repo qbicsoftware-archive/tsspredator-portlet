@@ -1,4 +1,4 @@
-package life.qbic.view.firstImplementation;
+package life.qbic.view.panels;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;
@@ -20,6 +20,7 @@ public class ParametersPanel extends CustomComponent {
     private Panel parametersPanel;
     private VerticalLayout contentLayout;
     RadioButtonGroup<String> presetSelection;
+    private Button presetInfoButton;
     //Normalization part
     private VerticalLayout normalizationLayout;
     ParameterSetter normalizationPercentile;
@@ -56,6 +57,15 @@ public class ParametersPanel extends CustomComponent {
         presetSelection = new RadioButtonGroup<>("Choose Parameter Preset");
         //TODO: Add some kind of separator between Presets and "Custom"
         presetSelection.setItems("Very Specific", "More Specific", "Default", "More Sensitive", "Very Sensitive", Globals.PARAMETERS_CUSTOM);
+        //Setup infoButton with helpGraphic as Tooltip
+        presetInfoButton = new Button(VaadinIcons.INFO_CIRCLE);
+        presetInfoButton.addStyleNames(
+                ValoTheme.BUTTON_ICON_ONLY,
+                ValoTheme.BUTTON_BORDERLESS,
+                ValoTheme.BUTTON_ICON_ALIGN_TOP,
+                ValoTheme.BUTTON_SMALL);
+        presetInfoButton.setDescription(
+                "<img src=\"" + Globals.SENSITIVITY_SPECIFICITY_IMAGE + "\" style=\"width: 75%; height: 75%\"/>", ContentMode.HTML);
         setupPresetListeners();
         createParameterLayouts();
         contentLayout.addComponents(new InfoBar(Globals.PARAMETER_INFO), normalizationLayout, prePredictionLayout, postPredictionLayout);
@@ -100,7 +110,7 @@ public class ParametersPanel extends CustomComponent {
         Label valueDisplay;
 
         public ParameterSetter(String caption,
-                               int minValue, int maxValue, int resolution, String imagePath) {
+                               int minValue, int maxValue, int resolution, String tooltipText, String imagePath) {
             //Setup slider
             slider = new Slider(caption);
             slider.setMin(minValue);
@@ -121,7 +131,11 @@ public class ParametersPanel extends CustomComponent {
                 }
 
                 if (caption.contains("Shift") || caption.contains("UTR") || caption.contains("Clustering Distance")) {
-                    valueDisplay.setValue(valueDisplay.getValue() + " Base Pairs");
+                    if (event.getValue() == 1) {
+                        valueDisplay.setValue(valueDisplay.getValue() + " Base Pair");
+                    } else {
+                        valueDisplay.setValue(valueDisplay.getValue() + " Base Pairs");
+                    }
                 }
             });
 
@@ -132,7 +146,8 @@ public class ParametersPanel extends CustomComponent {
                     ValoTheme.BUTTON_BORDERLESS,
                     ValoTheme.BUTTON_ICON_ALIGN_TOP,
                     ValoTheme.BUTTON_SMALL);
-            infoButton.setDescription("<img src=\"" + imagePath + "\"/>", ContentMode.HTML);
+            infoButton.setDescription(tooltipText +
+                    (!imagePath.equals("") ? "<br><br><img src=\"" + imagePath + "\" style=\"width: 75%; height: 75%\"/>" : ""), ContentMode.HTML);
             //Create layout, put all components there and set as root
             layout = new VerticalLayout();
             layout.addComponents(new HorizontalLayout(slider, infoButton), valueDisplay);
@@ -147,56 +162,65 @@ public class ParametersPanel extends CustomComponent {
 
         //Normalization Part
         normalizationPercentile = new ParameterSetter(
-                "Normalization Percentile", 0, 1, 1, "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
+                "Normalization Percentile", 0, 1, 1,
+                Globals.NORMALIZATION_PERCENTILE_TEXT, "");
         enrichmentNormalizationPercentile = new ParameterSetter(
-                "Enrichment Normalization Percentile", 0, 1, 1, "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
-        writeNormalizedGraphs = new CheckBox("Write Normalized graph files");
+                "Enrichment Normalization Percentile", 0, 1, 1,
+                Globals.ENRICHMENT_NORMALIZATION_PERCENTILE_TEXT, "");
+        writeNormalizedGraphs = new CheckBox("Write Normalized Graph Files");
 
         //Pre-Prediction Part
 
-        //TODO: Bind the max value of the reduction sliders to the other sliders so that they don't exceed them
         stepHeight = new ParameterSetter("Step Height",
-                0, 1, 1,
-                "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
+                0, 1, 1, Globals.STEP_HEIGHT_TEXT,
+                Globals.STEP_HEIGHT_IMAGE);
         stepHeightReduction = new ParameterSetter("Step Height Reduction",
-                0, 1, 1,
-                "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
+                0, 1, 1, Globals.STEP_HEIGHT_REDUCTION_TEXT,
+                "");
+        stepHeight.slider.addValueChangeListener(vce -> stepHeightReduction.slider.setMax(vce.getValue()));
+
         stepFactor = new ParameterSetter("Step Factor",
-                1, 5, 1,
-                "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
+                1, 5, 1, Globals.STEP_FACTOR_TEXT,
+                Globals.STEP_FACTOR_IMAGE);
         stepFactorReduction = new ParameterSetter("Step Factor Reduction",
-                0, 2, 1,
-                "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
+                0, 2, 1, Globals.STEP_FACTOR_REDUCTION_TEXT,
+                "");
+        stepFactor.slider.addValueChangeListener(vce -> stepFactorReduction.slider.setMax(vce.getValue()));
 
         enrichmentFactor = new ParameterSetter("Enrichment Factor",
-                0, 10, 1,
-                "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
+                0, 10, 1, Globals.ENRICHMENT_FACTOR_TEXT,
+                Globals.ENRICHMENT_FACTOR_IMAGE);
         processingSiteFactor = new ParameterSetter("Processing Site Factor",
-                0, 10, 1,
-                "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
+                0, 10, 1, Globals.PROCESSING_SITE_FACTOR_TEXT,
+                "");
         stepLength = new ParameterSetter("Step Length",
-                0, 100, 0,
-                "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
+                0, 100, 0, Globals.STEP_LENGTH_TEXT,
+                "");
         baseHeight = new ParameterSetter("Base Height (disabled by default)",
-                0, 1, 0,
-                "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
+                0, 1, 0, Globals.BASE_HEIGHT_TEXT,
+                "");
         baseHeight.setEnabled(false);
 
 
         //Post-prediction Part
         clusterMethod = new ComboBox<>("Clustering Method");
         clusterMethod.setItems(Globals.CLUSTER_METHOD_HIGHEST, Globals.CLUSTER_METHOD_FIRST);
-        clusteringDistance = new ParameterSetter("TSS Clustering Distance", 0, 100, 0, "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
+        clusteringDistance = new ParameterSetter("TSS Clustering Distance", 0, 3, 0,
+                Globals.CLUSTERING_DISTANCE_TEXT, "");
 
-        //TODO: Bind caption to mode
-        crossDatasetShift = new ParameterSetter("Allowed Cross-Genome Shift", 0, 100, 0, "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
-        crossReplicateShift = new ParameterSetter("Allowed Cross-Replication Shift", 0, 100, 0, "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
+        crossDatasetShift = new ParameterSetter("Allowed Cross-Genome Shift", 0, 3, 0,
+                Globals.CROSS_DATASET_SHIFT_TEXT, "");
+
+        crossReplicateShift = new ParameterSetter("Allowed Cross-Replication Shift", 0, 3, 0,
+                Globals.CROSS_REPLICATE_SHIFT_TEXT, "");
         matchingReplicates = new ComboBox<>("Matching Replicates");
         matchingReplicates.setItems(IntStream.rangeClosed(1, presenter.getNumberOfReplicates())
                 .boxed().collect(Collectors.toList()));
         HorizontalLayout utrLengths = new HorizontalLayout();
-        utrLength = new ParameterSetter("UTR length", 0, 1000, 0, "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
-        antisenseUtrLength = new ParameterSetter("Antisense UTR length", 0, 1000, 0, "../VAADIN/themes/mytheme/css_resources/Dummy.svg");
+        utrLength = new ParameterSetter("UTR length", 0, 1000, 0,
+                Globals.UTR_LENGTH_TEXT, "");
+        antisenseUtrLength = new ParameterSetter("Antisense UTR length", 0, 1000, 0,
+                Globals.ANTISENSE_UTR_LENGTH_TEXT, "");
         utrLengths.addComponents(utrLength, antisenseUtrLength);
 
         //Layouts
@@ -208,7 +232,7 @@ public class ParametersPanel extends CustomComponent {
         prePredictionLayout = new VerticalLayout(
                 new Label("<b>Pre-prediction</b>", ContentMode.HTML),
                 new InfoBar(Globals.PRE_PREDICTION_INFO),
-                presetSelection,
+                new HorizontalLayout(presetSelection, presetInfoButton),
                 new HorizontalLayout(stepHeight, stepHeightReduction, stepFactor, stepFactorReduction),
                 new HorizontalLayout(enrichmentFactor, processingSiteFactor, stepLength, baseHeight));
         postPredictionLayout = new VerticalLayout(

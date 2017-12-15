@@ -1,4 +1,4 @@
-package life.qbic.view.firstImplementation;
+package life.qbic.view.panels;
 
 import com.vaadin.ui.*;
 import life.qbic.model.Globals;

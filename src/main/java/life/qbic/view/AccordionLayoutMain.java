@@ -9,7 +9,7 @@ import com.vaadin.ui.CustomComponent;
 import com.vaadin.ui.VerticalLayout;
 import life.qbic.model.Globals;
 import life.qbic.presenter.Presenter;
-import life.qbic.view.firstImplementation.*;
+import life.qbic.view.panels.*;
 
 import java.io.File;
 

@@ -15070,7 +15070,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .v-grid-row.selected > td {
 	background: none;
-	color: green;
+	color: royalblue;
 }
 
 .mytheme .my-info-bar {
@@ -15079,4 +15079,21 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 6px 20px 6px 6px;
 	margin: 5px 15px 5px 20px;
 	border-right: 15px solid white;
+}
+
+.mytheme .v-tooltip {
+	background-color: white;
+	max-width: 100cm;
+	max-height: 100cm;
+	width: auto !important;
+	height: auto !important;
+	padding: 0.5cm 0.5cm;
+}
+
+.mytheme .v-tooltip-text {
+	color: black;
+	max-width: 100cm !important;
+	max-height: 100cm !important;
+	width: auto;
+	height: auto;
 }
