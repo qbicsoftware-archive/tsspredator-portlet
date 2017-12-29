@@ -2,6 +2,7 @@ package life.qbic.model.beans;
 
 /**
  * @author jmueller
+ * Represents a Fasta file (*.fasta)
  */
 public class FastaFileBean {
     private String name, creationDate;

@@ -14,9 +14,10 @@ import life.qbic.view.panels.*;
 import java.io.File;
 
 /**
- * The class {@link AccordionLayoutMain} contains the main layout of the GUI. Its core component
- * is an Accordion whose tabs are the parts of the TSSPredator workflow
- *
+ * Contains the main layout of the GUI. Its core component is an Accordion whose tabs make up the parts of the TSSPredator workflow:
+ * - General Configuration
+ * - Data Settings
+ * - Parameter Settings
  * @author jmueller
  */
 public class AccordionLayoutMain extends CustomComponent {
@@ -41,13 +42,13 @@ public class AccordionLayoutMain extends CustomComponent {
         });
         downloadButton = new Button("Download Config File");
         loadConfigButton = new Button("Load existing configuration");
-        loadConfigButton.addClickListener(e -> {
-            //TODO: Tell presenter to start loading procedure
-        });
         mainLayout.addComponents(contentAccordion, createConfigButton, downloadButton, loadConfigButton);
         setCompositionRoot(mainLayout);
     }
 
+    /**
+     * Creates the main Accordion and adds the panels to it
+     */
     private void createContentAccordion() {
         contentAccordion = new Accordion();
         generalConfigPanel = new GeneralConfigPanel(presenter);
@@ -68,20 +69,8 @@ public class AccordionLayoutMain extends CustomComponent {
         contentAccordion.setWidth(100, Unit.PERCENTAGE);
     }
 
-    public void updateDataPanelMode(boolean isConditions) {
-        //The genomeDataPanel has tab index 1, the conditionDataPanel has tab index 2
-        // in the contentAccordion
-        contentAccordion.getTab(1).setVisible(!isConditions);
-        contentAccordion.getTab(2).setVisible(isConditions);
-
-    }
-
-    public Presenter getPresenter() {
-        return presenter;
-    }
-
-    public void setPresenter(Presenter presenter) {
-        this.presenter = presenter;
+    public Accordion getContentAccordion() {
+        return contentAccordion;
     }
 
     public GeneralConfigPanel getGeneralConfigPanel() {

@@ -2,6 +2,7 @@ package life.qbic.model.beans;
 
 /**
  * @author jmueller
+ * Represents a project, i.e. an experiment the user made
  */
 public class ProjectBean {
     private String name, registrationDate;

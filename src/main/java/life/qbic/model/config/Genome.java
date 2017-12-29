@@ -3,7 +3,9 @@ package life.qbic.model.config;
 import java.util.ArrayList;
 
 /**
- * Contains all the information about a genome that are written to the config file
+ * An object of this class contains all the information about a genome that are written to the config file
+ * This includes the name of the genome, the paths to its fasta and alignment file, its alignment id and
+ * a list of the genome's Replicates (see Replicate class)
  * @author jmueller
  */
 public class Genome {

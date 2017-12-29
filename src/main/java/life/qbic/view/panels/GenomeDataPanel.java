@@ -13,6 +13,12 @@ import java.util.List;
 
 public class GenomeDataPanel extends DataPanel {
 
+    /**
+     * After calling the Constructor of the superclass, the components are added to the wrapperLayout.
+     * Unlike in the sibling class "ConditionDataPanel", no additional components are added.
+     *
+     * @param presenter
+     */
     public GenomeDataPanel(Presenter presenter) {
         super(presenter);
         numberOfDatasetsBox.setCaption("Select number of Genomes");
@@ -21,11 +27,20 @@ public class GenomeDataPanel extends DataPanel {
 
     }
 
+
+    /**
+     * This class represents a tab in the DatasetAccordion when comparing genomes.
+     */
     public class GenomeTab extends DatasetTab {
         TextField nameField, idField;
         Grid<FastaFileBean> fastaGrid;
         Grid<AnnotationFileBean> gffGrid;
 
+        /**
+         * Each genome tab gets components for its name, its alignment id, its fasta file and its annotation file.
+         * They are lain out in a FormLayout.
+         * The replicates sheet (defined in the superclass DatasetTab) is added as well.
+         */
         public GenomeTab(int index) {
             super(index);
             FormLayout genomeData = new FormLayout();
@@ -42,7 +57,10 @@ public class GenomeDataPanel extends DataPanel {
             gffGrid.addColumn(AnnotationFileBean::getSizeInKB).setCaption("Size (kB)");
             gffGrid.addStyleName("my-file-grid");
             genomeData.addComponents(new HorizontalLayout(nameField, idField), fastaGrid, gffGrid);
-            this.tab.addComponents(new InfoBar(Globals.GENOME_TAB_INFO),genomeData, new Label("<b>RNA-seq graph files for this condition:</b>", ContentMode.HTML), replicatesSheet);
+            this.tab.addComponents(new InfoBar(Globals.GENOME_TAB_INFO),
+                    genomeData,
+                    new Label("<b>RNA-seq graph files for this condition:</b>", ContentMode.HTML),
+                    replicatesSheet);
 
             //<-- DEBUG
             List<FastaFileBean> fastaFileBeanList = new LinkedList<>();

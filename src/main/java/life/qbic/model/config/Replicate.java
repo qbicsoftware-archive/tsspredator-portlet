@@ -1,7 +1,8 @@
 package life.qbic.model.config;
 
 /**
- * Contains all the information about a replicate that are written to the config file
+ * An object of this class contains all the information about a replicate that are written to the config file
+ * This includes the id of the replicate as well as the paths to the four graph files of the replicate
  * @author jmueller
  */
 public class Replicate {

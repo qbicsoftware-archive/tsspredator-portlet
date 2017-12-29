@@ -1,9 +1,15 @@
 package life.qbic.model.config;
 
+
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author jmueller
+ * Represents a config file. Its values are set by the presenter.
+ * The toString()-method returns the entire config file as a string.
+ * If a value is missing, a warning message is logged
  */
 public class ConfigFile {
     private String projectName;
@@ -35,17 +41,31 @@ public class ConfigFile {
     private int utrLength;
     private int antisenseUtrLength;
 
+    private final static Logger configFileLogger = Logger.getLogger(ConfigFile.class.getName());
+
     public ConfigFile() {
     }
 
     @Override
     public String toString() {
+        /*I (jmueller) changed some lines because they contained redundant/useless information, namely
+            - 'xmfa' is only written if the user is comparing genomes
+            - 'genome_...' and 'annotation_...", which contain the paths to the fasta and gff files for each genome,
+                 are only written if the user is comparing genomes
+            - When comparing conditions, every condition has the same genome (and annotation, respectively),
+                 so only one "fasta" and one "annotation" parameter is written - these are two new parameters that
+                 don't appear in the old config files!
+          Whoever is going to connect the WebUI to the backend needs to keep this in mind and either has to adjust
+          the config file parser in the backend or revert my changes right here.
+
+        */
         StringBuilder builder = new StringBuilder();
         buildLine(builder, "projectName", projectName);
         buildLine(builder, "numberOfDatasets", Integer.toString(numberOfDatasets));
         buildLine(builder, "numReplicates", Integer.toString(numberOfReplicates));
-        if (!isModeConditions)
+        if (!isModeConditions) {
             buildLine(builder, "xmfa", alignmentFile);
+        }
         buildLine(builder, "writeGraphs", writeGraphs ? "1" : "0");
 
         if (isModeConditions) {
@@ -110,15 +130,11 @@ public class ConfigFile {
 
     private void buildLine(StringBuilder builder, String key, String value) {
         if (value == null)
-            //TODO: Log instead of print
-            System.err.println("Couldn't create config file! Parameter \'" + key + "\' isn't set.");
+            configFileLogger.log(Level.WARNING, "Couldn't create config file! Parameter \'" + key + "\' isn't set.");
         else
             builder.append(key).append(" = ").append(value).append("\n");
     }
 
-    public String getProjectName() {
-        return projectName;
-    }
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
@@ -148,10 +164,6 @@ public class ConfigFile {
         isModeConditions = modeConditions;
     }
 
-    public String getAlignmentFile() {
-        return alignmentFile;
-    }
-
     public void setAlignmentFile(String alignmentFile) {
         this.alignmentFile = alignmentFile;
     }
@@ -164,16 +176,8 @@ public class ConfigFile {
         this.genomeList = genomeList;
     }
 
-    public String getConditionFasta() {
-        return conditionFasta;
-    }
-
     public void setConditionFasta(String conditionFasta) {
         this.conditionFasta = conditionFasta;
-    }
-
-    public String getConditionGFF() {
-        return conditionGFF;
     }
 
     public void setConditionGFF(String conditionGFF) {

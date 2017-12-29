@@ -17,7 +17,14 @@ public class ConditionDataPanel extends DataPanel {
     Grid<FastaFileBean> fastaGrid;
     Grid<AnnotationFileBean> gffGrid;
 
-
+    /**
+     * After calling the Constructor of the superclass, the components for the fasta file and the annotation file
+     * of the project are created and added to the components designed in the superclass. Unlike in the sibling class
+     * "GenomeDataPanel", only one Fasta and one GFF file are needed, so there need not be components for them in
+     * every DatasetTab.
+     *
+     * @param presenter
+     */
     public ConditionDataPanel(Presenter presenter) {
         super(presenter);
         numberOfDatasetsBox.setCaption("Select number of Conditions");
@@ -57,13 +64,25 @@ public class ConditionDataPanel extends DataPanel {
         //DEBUG -->
     }
 
+    /**
+     * This class represents a tab in the DatasetAccordion when comparing conditions.
+     */
     public class ConditionTab extends DatasetTab {
         TextField nameField;
 
+        /**
+         * For a ConditionTab, only the component for its name has to be created here.
+         * The other relevant components have been added above (Constructor of ConditionDataPanel),
+         * the replicatesSheet is created in the superclass constructor and only needs to be added to the layout.
+         *
+         * @param index
+         */
         public ConditionTab(int index) {
             super(index);
             nameField = new TextField("Name");
-            this.tab.addComponents(new InfoBar(Globals.CONDITION_TAB_INFO),nameField, new Label("<b>RNA-seq graph files for this condition:</b>", ContentMode.HTML), replicatesSheet);
+            this.tab.addComponents(new InfoBar(Globals.CONDITION_TAB_INFO), nameField,
+                    new Label("<b>RNA-seq graph files for this condition:</b>", ContentMode.HTML),
+                    replicatesSheet);
 
 
         }

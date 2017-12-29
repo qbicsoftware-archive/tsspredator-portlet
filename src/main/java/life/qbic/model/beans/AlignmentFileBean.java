@@ -2,6 +2,7 @@ package life.qbic.model.beans;
 
 /**
  * @author jmueller
+ * Represents an alignment file (*.xmfa)
  */
 public class AlignmentFileBean {
     private String name, creationDate;

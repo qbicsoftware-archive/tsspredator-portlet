@@ -12,6 +12,7 @@ import java.util.stream.IntStream;
 
 /**
  * This is a component where the user can set every parameter of his TSSPredator run.
+ * For a better overview, the parameters are divided into parts (see below)
  *
  * @author jmueller
  */
@@ -19,13 +20,14 @@ public class ParametersPanel extends CustomComponent {
     private Presenter presenter;
     private Panel parametersPanel;
     private VerticalLayout contentLayout;
-    RadioButtonGroup<String> presetSelection;
+    private RadioButtonGroup<String> presetSelection;
     private Button presetInfo;
+
     //Normalization part
     private VerticalLayout normalizationLayout;
-    ParameterSetter normalizationPercentile;
-    ParameterSetter enrichmentNormalizationPercentile;
-    CheckBox writeNormalizedGraphs;
+    private ParameterSetter normalizationPercentile;
+    private ParameterSetter enrichmentNormalizationPercentile;
+    private CheckBox writeNormalizedGraphs;
     private Button writeNormalizedInfo;
 
     //Pre-prediction part
@@ -37,15 +39,15 @@ public class ParametersPanel extends CustomComponent {
 
     //Post-prediction part
     private VerticalLayout postPredictionLayout;
-    ComboBox<String> clusterMethod;
+    private ComboBox<String> clusterMethod;
     private Button clusterMethodInfo;
-    ParameterSetter clusteringDistance;
-    ParameterSetter crossDatasetShift;
-    ParameterSetter crossReplicateShift;
-    ComboBox<Integer> matchingReplicates;
+    private ParameterSetter clusteringDistance;
+    private ParameterSetter crossDatasetShift;
+    private ParameterSetter crossReplicateShift;
+    private ComboBox<Integer> matchingReplicates;
     private Button matchingReplicatesInfo;
-    ParameterSetter utrLength;
-    ParameterSetter antisenseUtrLength;
+    private ParameterSetter utrLength;
+    private ParameterSetter antisenseUtrLength;
 
     public ParametersPanel(Presenter presenter) {
         this.presenter = presenter;
@@ -53,32 +55,27 @@ public class ParametersPanel extends CustomComponent {
         setCompositionRoot(parametersPanel);
     }
 
+    /**
+     * In this method, the main layout of this panel is created, the different layout parts are created and added
+     * to the main layout together with an explanatory info bar.
+     *
+     * @return
+     */
     private Panel designPanel() {
         Panel panel = new Panel();
         contentLayout = new VerticalLayout();
-
-        presetSelection = new RadioButtonGroup<>("<b>Choose Parameter Preset:</b>");
-        presetSelection.setCaptionAsHtml(true);
-        //TODO: Add some kind of separator between Presets and "Custom"
-        presetSelection.setItems("Very Specific", "More Specific", "Default", "More Sensitive", "Very Sensitive", Globals.PARAMETERS_CUSTOM);
-        presetSelection.addStyleName("my-radio-button-group");
-        //Setup infoButton with helpGraphic as Tooltip
-        presetInfo = new Button(VaadinIcons.INFO_CIRCLE);
-        presetInfo.addStyleNames(
-                ValoTheme.BUTTON_ICON_ONLY,
-                ValoTheme.BUTTON_BORDERLESS,
-                ValoTheme.BUTTON_ICON_ALIGN_TOP,
-                ValoTheme.BUTTON_SMALL);
-        presetInfo.setDescription(
-                Globals.SENSITIVITY_SPECIFICITY_TEXT + "<br><br><img src=\"" + Globals.SENSITIVITY_SPECIFICITY_IMAGE + "\" style=\"width: 75%; height: 75%\"/>", ContentMode.HTML);
-        setupPresetListeners();
         createParameterLayouts();
         contentLayout.addComponents(new InfoBar(Globals.PARAMETER_INFO), normalizationLayout, prePredictionLayout, postPredictionLayout);
         panel.setContent(contentLayout);
         return panel;
     }
 
-    private void setupPresetListeners() {
+    /**
+     * This method adds a listener to the preset selection box so the presenter is informed every time the user
+     * changes the preset.
+     * Additionally, the style of the preset buttons is changed (half-transparent when parameters are preset)
+     */
+    private void setupPresetListener() {
         presetSelection.addValueChangeListener(vce -> {
             switch (vce.getValue()) {
                 case "Very Specific":
@@ -124,8 +121,8 @@ public class ParametersPanel extends CustomComponent {
     }
 
     /**
-     * Template for a component where the user can adjust a parameter.
-     * Consists of a slider, a label displaying the slider's value and a button with info about the parameter
+     * Template for a component where the user can adjust a numeric parameter.
+     * Consists of a slider, a label displaying the slider's value and an info icon with tooltip info about the parameter
      */
     private class ParameterSetter extends CustomComponent {
         VerticalLayout layout;
@@ -141,7 +138,9 @@ public class ParametersPanel extends CustomComponent {
             slider.setMax(maxValue);
             slider.setResolution(resolution);
             slider.addValueChangeListener(vce -> {
-                if (vce.isUserOriginated()) {
+                if (vce.isUserOriginated() &&
+                        //Make sure the event actually came from a slider in the PrePrediction Part
+                        slider.getCaption().matches(".*Step.*|.*Factor.*")) {
                     presetSelection.setSelectedItem(Globals.PARAMETERS_CUSTOM);
                 }
             });
@@ -181,6 +180,9 @@ public class ParametersPanel extends CustomComponent {
         }
     }
 
+    /**
+     * In this method, all the parts of the layout are created with their components and their styles.
+     */
     private void createParameterLayouts() {
 
         //Normalization Part
@@ -204,6 +206,24 @@ public class ParametersPanel extends CustomComponent {
 
         //Pre-Prediction Part
 
+        //Preset
+        presetSelection = new RadioButtonGroup<>("<b>Choose Parameter Preset:</b>");
+        presetSelection.setCaptionAsHtml(true);
+        //TODO: Add some kind of separator between Presets and "Custom"
+        presetSelection.setItems("Very Specific", "More Specific", "Default", "More Sensitive", "Very Sensitive", Globals.PARAMETERS_CUSTOM);
+        presetSelection.addStyleName("my-radio-button-group");
+        //Setup infoButton with helpGraphic as Tooltip
+        presetInfo = new Button(VaadinIcons.INFO_CIRCLE);
+        presetInfo.addStyleNames(
+                ValoTheme.BUTTON_ICON_ONLY,
+                ValoTheme.BUTTON_BORDERLESS,
+                ValoTheme.BUTTON_ICON_ALIGN_TOP,
+                ValoTheme.BUTTON_SMALL);
+        presetInfo.setDescription(
+                Globals.SENSITIVITY_SPECIFICITY_TEXT + "<br><br><img src=\"" + Globals.SENSITIVITY_SPECIFICITY_IMAGE + "\" style=\"width: 75%; height: 75%\"/>", ContentMode.HTML);
+        setupPresetListener();
+
+        //Prediction Parameters
         stepHeight = new ParameterSetter("Step Height",
                 0, 1, 1, Globals.STEP_HEIGHT_TEXT,
                 Globals.STEP_HEIGHT_IMAGE);
@@ -285,6 +305,7 @@ public class ParametersPanel extends CustomComponent {
                 new HorizontalLayout(enrichmentFactor, processingSiteFactor, stepLength, baseHeight));
         predictionParametersLayout.addStyleNames("prediction-parameters-layout");
         predictionParametersLayout.setMargin(false);
+        predictionParametersLayout.setId("PredictionParameters");
         prePredictionLayout = new VerticalLayout(
                 new Label("<b>Pre-prediction</b>", ContentMode.HTML),
                 new InfoBar(Globals.PRE_PREDICTION_INFO),

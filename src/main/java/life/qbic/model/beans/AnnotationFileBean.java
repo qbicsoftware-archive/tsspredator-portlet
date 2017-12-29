@@ -2,6 +2,7 @@ package life.qbic.model.beans;
 
 /**
  * @author jmueller
+ * Represents a genome annotation file (*.gff)
  */
 public class AnnotationFileBean {
     private String name, creationDate;

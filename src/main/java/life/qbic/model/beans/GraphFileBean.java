@@ -2,6 +2,7 @@ package life.qbic.model.beans;
 
 /**
  * @author jmueller
+ * Represents an RNA-seq graph ("wiggle") file (*.gr)
  */
 public class GraphFileBean {
     private String name, creationDate;

@@ -8,7 +8,10 @@ import com.vaadin.ui.components.grid.ItemClickListener;
 
 /**
  * @author jmueller
- * Just a plain old Vaadin Grid with the extension of a double click event
+ * Just a plain old Vaadin Grid with slight modifications:
+ *  - Selection occurs by double, not by single click
+ *  - Selected rows have a different style than usual ("selected")
+ *  - A notification is shown whenever a row is selected TODO: Notifications aren't shown on the server yet
  */
 public class MyGrid<T> extends Grid<T> {
     private T selectedItem;
