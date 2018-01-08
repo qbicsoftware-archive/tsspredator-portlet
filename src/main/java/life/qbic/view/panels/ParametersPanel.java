@@ -37,8 +37,8 @@ public class ParametersPanel extends CustomComponent {
     private ParameterSetter enrichmentFactor, processingSiteFactor;
     private ParameterSetter stepLength, baseHeight;
 
-    //Post-prediction part
-    private VerticalLayout postPredictionLayout;
+    //TSS Clustering and Comparative Parameters
+    private VerticalLayout clusteringAndComparativeLayout;
     private ComboBox<String> clusterMethod;
     private Button clusterMethodInfo;
     private ParameterSetter clusteringDistance;
@@ -46,6 +46,9 @@ public class ParametersPanel extends CustomComponent {
     private ParameterSetter crossReplicateShift;
     private ComboBox<Integer> matchingReplicates;
     private Button matchingReplicatesInfo;
+
+    //Classification Parameters
+    private VerticalLayout classificationLayout;
     private ParameterSetter utrLength;
     private ParameterSetter antisenseUtrLength;
 
@@ -65,7 +68,8 @@ public class ParametersPanel extends CustomComponent {
         Panel panel = new Panel();
         contentLayout = new VerticalLayout();
         createParameterLayouts();
-        contentLayout.addComponents(new InfoBar(Globals.PARAMETER_INFO), normalizationLayout, prePredictionLayout, postPredictionLayout);
+        contentLayout.addComponents(new InfoBar(Globals.PARAMETER_INFO), normalizationLayout, prePredictionLayout,
+                clusteringAndComparativeLayout, classificationLayout);
         panel.setContent(contentLayout);
         return panel;
     }
@@ -192,7 +196,7 @@ public class ParametersPanel extends CustomComponent {
         enrichmentNormalizationPercentile = new ParameterSetter(
                 "Enrichment Normalization Percentile", 0, 1, 1,
                 Globals.ENRICHMENT_NORMALIZATION_PERCENTILE_TEXT, "");
-        writeNormalizedGraphs = new CheckBox("<b>Write Normalized Graph Files</b>");
+        writeNormalizedGraphs = new CheckBox("<i>Write Normalized Graph Files</i>");
         writeNormalizedGraphs.setCaptionAsHtml(true);
         writeNormalizedInfo = new Button(VaadinIcons.INFO_CIRCLE);
         writeNormalizedInfo.addStyleNames(
@@ -294,7 +298,6 @@ public class ParametersPanel extends CustomComponent {
         //Layouts
         normalizationLayout = new VerticalLayout(
                 new Label("<b>Normalization</b>", ContentMode.HTML),
-                new InfoBar(Globals.NORMALIZATION_INFO),
                 new HorizontalLayout(writeNormalizedGraphs, writeNormalizedInfo),
                 new HorizontalLayout(normalizationPercentile, enrichmentNormalizationPercentile));
         Label adjustByHand = new Label("<b>Adjust Parameters by Hand:</b>", ContentMode.HTML);
@@ -307,20 +310,21 @@ public class ParametersPanel extends CustomComponent {
         predictionParametersLayout.setMargin(false);
         predictionParametersLayout.setId("PredictionParameters");
         prePredictionLayout = new VerticalLayout(
-                new Label("<b>Pre-prediction</b>", ContentMode.HTML),
-                new InfoBar(Globals.PRE_PREDICTION_INFO),
+                new Label("<b>Prediction</b>", ContentMode.HTML),
                 new HorizontalLayout(new HorizontalLayout(presetSelection, presetInfo),
                         predictionParametersLayout));
-        postPredictionLayout = new VerticalLayout(
-                new Label("<b>Post-Prediction</b>", ContentMode.HTML),
-                new InfoBar(Globals.POST_PREDICTION_INFO),
-                new HorizontalLayout(matchingReplicates, matchingReplicatesInfo, utrLengths),
-                new HorizontalLayout(crossDatasetShift, crossReplicateShift),
+        clusteringAndComparativeLayout = new VerticalLayout(
+                new Label("<b>TSS Clustering and Comparison of Datasets/Replicates</b>", ContentMode.HTML),
+                new HorizontalLayout(matchingReplicates, matchingReplicatesInfo, crossDatasetShift, crossReplicateShift),
                 new HorizontalLayout(clusterMethod, clusterMethodInfo, clusteringDistance));
+        classificationLayout = new VerticalLayout(
+                new Label("<b>Classification</b>", ContentMode.HTML),
+                utrLengths);
 
         normalizationLayout.addStyleName("parameter-section");
         prePredictionLayout.addStyleName("parameter-section");
-        postPredictionLayout.addStyleName("parameter-section");
+        clusteringAndComparativeLayout.addStyleName("parameter-section");
+        classificationLayout.addStyleName("parameter-section");
 
     }
 

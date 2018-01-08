@@ -9,33 +9,28 @@ import com.vaadin.ui.components.grid.ItemClickListener;
 /**
  * @author jmueller
  * Just a plain old Vaadin Grid with slight modifications:
- *  - Selection occurs by double, not by single click
- *  - Selected rows have a different style than usual ("selected")
- *  - A notification is shown whenever a row is selected TODO: Notifications aren't shown on the server yet
+ * - It is not possible to deselect, only to select something else
+ * - Selected rows have a different style than usual ("selected")
+ * - A notification is shown whenever a row is selected TODO: Notifications aren't shown on the server yet
  */
 public class MyGrid<T> extends Grid<T> {
     private T selectedItem;
 
-    public MyGrid(){
+    public MyGrid() {
         new MyGrid("");
     }
 
-    public MyGrid(String caption){
+    public MyGrid(String caption) {
         super(caption);
-        setStyleGenerator((StyleGenerator<T>) t -> this.getSelectedItems().contains(t) ? "selected": null);
+        setStyleGenerator((StyleGenerator<T>) t -> this.getSelectedItems().contains(t) ? "selected" : null);
 
         addSelectionListener((SelectionListener<T>) selectionEvent -> {
-           if(selectionEvent.isUserOriginated())
-               select(this.selectedItem);
-           else
-               selectedItem = selectionEvent.getFirstSelectedItem().get();
-        });
-
-        this.addItemClickListener((ItemClickListener<T>) clickEvent -> {
-            if(!clickEvent.getMouseEventDetails().isDoubleClick())
-                return;
-            this.select(clickEvent.getItem());
-            Notification.show(clickEvent.getItem().toString() + " has been selected");
+            if (!selectionEvent.getFirstSelectedItem().isPresent()) {
+                select(selectedItem);
+            } else if (selectionEvent.isUserOriginated()) {
+                selectedItem = selectionEvent.getFirstSelectedItem().get();
+                Notification.show(selectionEvent.getFirstSelectedItem().get().toString() + " has been selected");
+            }
 
         });
 

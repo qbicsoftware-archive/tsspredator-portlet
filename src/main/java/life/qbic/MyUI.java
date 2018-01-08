@@ -20,6 +20,7 @@ public class MyUI extends UI {
     protected void init(VaadinRequest vaadinRequest) {
         Presenter presenter = new Presenter();
         AccordionLayoutMain layout = new AccordionLayoutMain(presenter);
+        layout.setWidth(UI.getCurrent().getPage().getBrowserWindowWidth(), Unit.PIXELS);
         presenter.setView(layout);
         presenter.initFields();
         presenter.initBindings();

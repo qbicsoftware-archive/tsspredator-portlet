@@ -12,6 +12,7 @@ import life.qbic.model.config.ConfigFile;
 import life.qbic.model.config.Genome;
 import life.qbic.model.config.Replicate;
 import life.qbic.view.AccordionLayoutMain;
+import life.qbic.view.MyGrid;
 import life.qbic.view.panels.ConditionDataPanel;
 import life.qbic.view.panels.DataPanel;
 import life.qbic.view.panels.GenomeDataPanel;
@@ -83,18 +84,19 @@ public class Presenter {
                         view.getGeneralConfigPanel().getProjectGrid().setComponentError(new ErrorMessage() {
                             @Override
                             public ErrorLevel getErrorLevel() {
-                                return null;
+                                return ErrorLevel.ERROR;
                             }
 
                             @Override
                             public String getFormattedHtmlMessage() {
-                                return "Please select a project by double-clicking it!";
+                                return "Please select a project by clicking on it!";
                             }
                         });
+                        return false;
                     } else {
                         view.getGeneralConfigPanel().getProjectGrid().setComponentError(null);
+                        return true;
                     }
-                    return true;
                 }, "")
                 .bind((ValueProvider<ConfigFile, ProjectBean>) configFile -> {
                             return new ProjectBean(); //TODO: Return something useful here
@@ -229,18 +231,19 @@ public class Presenter {
                         view.getGeneralConfigPanel().getAlignmentFileGrid().setComponentError(new ErrorMessage() {
                             @Override
                             public ErrorLevel getErrorLevel() {
-                                return null;
+                                return ErrorLevel.ERROR;
                             }
 
                             @Override
                             public String getFormattedHtmlMessage() {
-                                return "Please select an alignment file by double-clicking it!";
+                                return "Please select an alignment file by clicking on it!";
                             }
                         });
+                        return false;
                     } else {
                         view.getGeneralConfigPanel().getAlignmentFileGrid().setComponentError(null);
+                        return true;
                     }
-                    return true;
                 }, "")
                 .bind((ValueProvider<ConfigFile, AlignmentFileBean>) configFile -> {
                             return new AlignmentFileBean(); //TODO: Return something useful here
@@ -332,7 +335,7 @@ public class Presenter {
                         view.getConditionDataPanel().getFastaGrid().setComponentError(new ErrorMessage() {
                             @Override
                             public ErrorLevel getErrorLevel() {
-                                return null;
+                                return ErrorLevel.ERROR;
                             }
 
                             @Override
@@ -340,10 +343,11 @@ public class Presenter {
                                 return "Please select a Fasta file by double clicking it!";
                             }
                         });
+                        return false;
                     } else {
                         view.getConditionDataPanel().getFastaGrid().setComponentError(null);
+                        return true;
                     }
-                    return true;
                 }, "")
                 .bind((ValueProvider<ConfigFile, FastaFileBean>) configFile -> new FastaFileBean(),
                         (Setter<ConfigFile, FastaFileBean>) (configFile, fastaFileBean) -> configFile.setConditionFasta(fastaFileBean.getName()));
@@ -354,18 +358,19 @@ public class Presenter {
                         view.getConditionDataPanel().getGffGrid().setComponentError(new ErrorMessage() {
                             @Override
                             public ErrorLevel getErrorLevel() {
-                                return null;
+                                return ErrorLevel.ERROR;
                             }
 
                             @Override
                             public String getFormattedHtmlMessage() {
-                                return "Please select an annotation file by double-clicking it!";
+                                return "Please select an annotation file by clicking on it!";
                             }
                         });
+                        return false;
                     } else {
                         view.getConditionDataPanel().getGffGrid().setComponentError(null);
+                        return true;
                     }
-                    return true;
                 }, "")
                 .bind((ValueProvider<ConfigFile, AnnotationFileBean>) configFile -> new AnnotationFileBean(),
                         (Setter<ConfigFile, AnnotationFileBean>) (configFile, annotationFileBean) -> configFile.setConditionGFF(annotationFileBean.getName()));
@@ -443,7 +448,7 @@ public class Presenter {
                             genomeTab.getFastaGrid().setComponentError(new ErrorMessage() {
                                 @Override
                                 public ErrorLevel getErrorLevel() {
-                                    return null;
+                                    return ErrorLevel.ERROR;
                                 }
 
                                 @Override
@@ -451,10 +456,11 @@ public class Presenter {
                                     return "Please select the fasta file of this genome (*.fasta)!";
                                 }
                             });
+                            return false;
                         } else {
                             genomeTab.getFastaGrid().setComponentError(null);
+                            return true;
                         }
-                        return true;
                     }, "")
                     .bind((ValueProvider<ConfigFile, FastaFileBean>) configFile -> new FastaFileBean(),
                             (Setter<ConfigFile, FastaFileBean>) (configFile, fastaFileBean) -> configFile.getGenomeList().get(index).setFasta(fastaFileBean.getName()));
@@ -479,7 +485,7 @@ public class Presenter {
                             genomeTab.getGffGrid().setComponentError(new ErrorMessage() {
                                 @Override
                                 public ErrorLevel getErrorLevel() {
-                                    return null;
+                                    return ErrorLevel.ERROR;
                                 }
 
                                 @Override
@@ -487,10 +493,11 @@ public class Presenter {
                                     return "Please select the annotation file of this genome (*.gff)";
                                 }
                             });
+                            return false;
                         } else {
                             genomeTab.getGffGrid().setComponentError(null);
+                            return true;
                         }
-                        return true;
                     }, "")
                     .bind((ValueProvider<ConfigFile, AnnotationFileBean>) configFile -> new AnnotationFileBean(),
                             (Setter<ConfigFile, AnnotationFileBean>) (configFile, annotationFileBean) -> configFile.getGenomeList().get(index).setGff(annotationFileBean.getName()));
@@ -518,7 +525,7 @@ public class Presenter {
                         replicateTab.getTreatedCoding().setComponentError(new ErrorMessage() {
                             @Override
                             public ErrorLevel getErrorLevel() {
-                                return null;
+                                return ErrorLevel.ERROR;
                             }
 
                             @Override
@@ -526,10 +533,11 @@ public class Presenter {
                                 return "Please drag a graph file here!";
                             }
                         });
+                        return false;
                     } else {
                         replicateTab.getTreatedCoding().setComponentError(null);
+                        return true;
                     }
-                    return true;
                 }, "")
                 .bind((ValueProvider<ConfigFile, GraphFileBean>) configFile -> {
                             return new GraphFileBean(); //TODO: Do something useful here
@@ -549,7 +557,7 @@ public class Presenter {
                         replicateTab.getTreatedTemplate().setComponentError(new ErrorMessage() {
                             @Override
                             public ErrorLevel getErrorLevel() {
-                                return null;
+                                return ErrorLevel.ERROR;
                             }
 
                             @Override
@@ -557,10 +565,11 @@ public class Presenter {
                                 return "Please drag a graph file here!";
                             }
                         });
+                        return false;
                     } else {
                         replicateTab.getTreatedTemplate().setComponentError(null);
+                        return true;
                     }
-                    return true;
                 }, "")
                 .bind((ValueProvider<ConfigFile, GraphFileBean>) configFile -> new GraphFileBean(),
                         (Setter<ConfigFile, GraphFileBean>) (configFile, graphFileBean) -> {
@@ -578,7 +587,7 @@ public class Presenter {
                         replicateTab.getUntreatedCoding().setComponentError(new ErrorMessage() {
                             @Override
                             public ErrorLevel getErrorLevel() {
-                                return null;
+                                return ErrorLevel.ERROR;
                             }
 
                             @Override
@@ -586,10 +595,11 @@ public class Presenter {
                                 return "Please drag a graph file here!";
                             }
                         });
+                        return false;
                     } else {
                         replicateTab.getUntreatedCoding().setComponentError(null);
+                        return true;
                     }
-                    return true;
                 }, "")
                 .bind((ValueProvider<ConfigFile, GraphFileBean>) configFile -> new GraphFileBean(),
                         (Setter<ConfigFile, GraphFileBean>) (configFile, graphFileBean) -> {
@@ -607,7 +617,7 @@ public class Presenter {
                         replicateTab.getUntreatedTemplate().setComponentError(new ErrorMessage() {
                             @Override
                             public ErrorLevel getErrorLevel() {
-                                return null;
+                                return ErrorLevel.ERROR;
                             }
 
                             @Override
@@ -615,10 +625,11 @@ public class Presenter {
                                 return "Please drag a graph file here!";
                             }
                         });
+                        return false;
                     } else {
                         replicateTab.getUntreatedTemplate().setComponentError(null);
+                        return true;
                     }
-                    return true;
                 }, "")
                 .bind((ValueProvider<ConfigFile, GraphFileBean>) configFile -> new GraphFileBean(),
                         (Setter<ConfigFile, GraphFileBean>) (configFile, graphFileBean) -> {
@@ -681,6 +692,7 @@ public class Presenter {
 
     /**
      * Removes a number of replicates from EACH genome in the config file
+     *
      * @param replicatesToRemove
      */
     public void removeReplicates(int replicatesToRemove) {
@@ -696,6 +708,7 @@ public class Presenter {
 
     /**
      * Sets the replicate id of a replicate that is part of a dataset, both specified by their indices
+     *
      * @param datasetIndex
      * @param replicateIndex
      * @param id
@@ -714,6 +727,7 @@ public class Presenter {
      * This method uses the configFile object to generate an actual config file.
      * First, the configFileBinder is validated and optionally, an error message is displayed.
      * Second, the configFile.toString() is called and its output written to a file, which is then returned
+     *
      * @return
      */
     public File produceConfigFile() {
@@ -723,11 +737,10 @@ public class Presenter {
         //There will always be 'silent' errors because of non-visible fields.
         //If we're in condition mode, it's 3 errors, in genome mode it's 4 errors
         //TODO: It's bad practice to hard-code the silent error numbers - is there a way to work around this?
-        int silentErrors = configFile.isModeConditions() ? 3 : 4;
-
+        int silentErrors = configFile.isModeConditions() ? 0 : 2;
         if (validationStatus.getValidationErrors().size() > silentErrors) {
-            Notification.show("There are errors (" + (validationStatus.getValidationErrors().size() - silentErrors)
-                    + "). Please check the highlighted fields.");
+            Notification.show("Your configuration couldn't be saved because there are errors (" + (validationStatus.getValidationErrors().size() - silentErrors)
+                    + "). Please check the fields marked with a red '!'.");
         } else {
             try {
                 String configText = configFile.toString();
