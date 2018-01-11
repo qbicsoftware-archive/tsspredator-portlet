@@ -92,6 +92,35 @@ public class Presenter {
 
     }
 
+    /*
+    Methode nicht beschrieben, sehr komplex, unübersichtlich.
+
+    Ich würde den Code weiter in private Methoden weiter untergliedern.
+
+    Zum Beispiel:
+
+    public Presenter(...){
+        ...
+        connectInputFieldsAndConfigModel();
+    }
+
+    private void connectInputFieldsAndConfigModel){
+        connectGeneralSettings();
+        connectParameterSettings();
+        connectFileInputFields();
+        ...
+    }
+
+    private void connectGeneralSettings(){
+        ...
+    }
+
+    Macht auch das Debugging einfacher ;) Ich würde auch keine public init Methode im Presenter mehr
+    machen. Macht eigentlich keinen Sinn. Wenn du das Presenter Objekt erstellst, willst du ja eigentlich,
+    dass auch die Verknüpfung von View und Model stattfindet. Das extra zu callen ist Boilder code in der 
+    Main Klasse.
+
+     */
     public void initBindings() {
         configFileBinder.forField(view.getGeneralConfigPanel().getProjectGrid().asSingleSelect())
                 .withValidator(projectBean -> {
