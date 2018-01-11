@@ -41,6 +41,36 @@ public class Presenter {
 
     private Preset preset = Preset.DEFAULT;
 
+    /* Presenter Aufbau ist nicht korrekt.
+    Die Presenter Instanz bekommt idR eine Instanz von View und von Model im Kostruktor
+    übergeben. Und wenn man es ganz fein macht, eigentlich vom Typ eines Interfaces.
+
+    Zum Beispiel: 
+    
+    public ComponentsPresenter(IComponentsView view, IComponentsModel model){
+        this.view = view;
+        this.model = model;
+        ...
+    }
+
+    ...
+    public ComponentsViewImpl implements IComponentsView
+    ...
+    public ComponentsModelImpl implements IComponentsModel
+
+    public MainClass(){
+        void main(String [] args){
+            IComponentsView view = new ComponentsViewImpl();
+            IComponentsModel model = new ComponentsModelImpl();
+            
+            ComponentsPresenter presenter = new ComponentsPresenter(view, model);
+            presenter.connect();
+        }
+    }
+
+    Der große Vorteil liegt in der besseren Abstraktion und Modulariserung -> bessere
+    Testbarkeit!
+    */
     public Presenter() {
         configFile = new ConfigFile();
         configFile.setGenomeList(new ArrayList<>());
