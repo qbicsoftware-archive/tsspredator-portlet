@@ -120,6 +120,17 @@ public class Presenter {
     dass auch die Verknüpfung von View und Model stattfindet. Das extra zu callen ist Boilder code in der 
     Main Klasse.
 
+    OK, seh gerade, dass du schon versucht hast die Methoden zu Modularisieren.
+    Dann mach ne Helper Class, und lager den Code aus. Kann ja ne statische Klasse sein, die Binder und View bekommt.
+
+    Zum Beispiel 
+
+    class PresenterHelper{
+        static protected connectGeneralSettings(Binder, View){};
+        static protected connectParameterSettings(Binder, View){};
+        static protected connectFileInputFields(Binder, View){};
+    }
+
      */
     public void initBindings() {
         configFileBinder.forField(view.getGeneralConfigPanel().getProjectGrid().asSingleSelect())
@@ -299,6 +310,11 @@ public class Presenter {
         configFileBinder.forField(view.getParametersPanel().getStepLength())
                 .withConverter(Double::intValue, Integer::doubleValue)
                 .bind(ConfigFile::getStepLength, ConfigFile::setStepLength);
+        /*
+        Wäre gut zu wissen, welche Felder hier gebunden werden. Kannst ja am Anfang jeder init Methode
+        kurz beschreiben, welche TSSpredator Einstellungen hier verknüpft werden. Musst nicht für jeden bind()
+        Command nen eigenen Kommentar schreiben, deine Setter, Getter sind 
+        */
         configFileBinder.forField(view.getParametersPanel().getBaseHeight()).bind(
                 ConfigFile::getBaseHeight,
                 ConfigFile::setBaseHeight);
