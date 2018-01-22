@@ -10,10 +10,10 @@ import com.vaadin.ui.components.grid.GridDropTarget;
 import life.qbic.model.Globals;
 import life.qbic.model.beans.GraphFileBean;
 import life.qbic.presenter.Presenter;
+import life.qbic.testing.TestData;
 import life.qbic.view.MyGraphFileGrid;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -213,7 +213,7 @@ public abstract class DataPanel extends CustomComponent {
             untreatedTemplate.setCaptionAsHtml(true);
 
             graphFileGrid = new Grid<>("Available Graph Files");
-            float graphFileGridWidth = 600;
+            float graphFileGridWidth = 900;
             graphFileGrid.setWidth(graphFileGridWidth, Unit.PIXELS);
             graphFileGrid.addColumn(GraphFileBean::getName)
                     .setCaption("File name")
@@ -266,17 +266,9 @@ public abstract class DataPanel extends CustomComponent {
             layout.setComponentAlignment(graphFileGrid, Alignment.BOTTOM_CENTER);
             setCompositionRoot(layout);
 
-            //<-- DEBUG
-            List<GraphFileBean> graphFileBeanList = new LinkedList<>();
-            for (int i = 0; i < 10; i++) {
-                GraphFileBean gfb = new GraphFileBean();
-                gfb.setName("Test Graph File " + i);
-                gfb.setCreationDate("01-01-01");
-                gfb.setSizeInKB(42);
-                graphFileBeanList.add(gfb);
-            }
-            graphFileGrid.setItems(graphFileBeanList);
-            //DEBUG -->
+            //<-- TESTING
+            graphFileGrid.setItems(TestData.createGraphFileBeanList());
+            //TESTING -->
 
         }
 

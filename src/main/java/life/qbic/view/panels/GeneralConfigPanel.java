@@ -5,6 +5,7 @@ import life.qbic.model.Globals;
 import life.qbic.model.beans.AlignmentFileBean;
 import life.qbic.model.beans.ProjectBean;
 import life.qbic.presenter.Presenter;
+import life.qbic.testing.TestData;
 import life.qbic.view.MyGrid;
 
 import java.util.LinkedList;
@@ -58,27 +59,12 @@ public class GeneralConfigPanel extends CustomComponent{
         contentLayout.addComponents(projectTypeButtonGroup, projectGrid, alignmentFileGrid);
         panel.setContent(new VerticalLayout(new InfoBar(Globals.GENERAL_CONFIG_INFO), contentLayout));
 
-        //<-- DEBUG
-        List<ProjectBean> projectBeanList = new LinkedList<>();
-        for (int i = 0; i < 10; i++) {
-            ProjectBean pb = new ProjectBean();
-            pb.setName("TestProject " + i);
-            pb.setRegistrationDate("01-01-01");
-            projectBeanList.add(pb);
-        }
-        projectGrid.setItems(projectBeanList);
 
-        List<AlignmentFileBean> alignmentFileBeanList = new LinkedList<>();
-        for (int i = 0; i < 10; i++) {
-            AlignmentFileBean afb = new AlignmentFileBean();
-            afb.setName("TestAlignmentFile " + i);
-            afb.setCreationDate("01-01-01");
-            afb.setSizeInKB(42);
-            alignmentFileBeanList.add(afb);
-        }
-        alignmentFileGrid.setItems(alignmentFileBeanList);
 
-        //DEBUG -->
+        //<-- TESTING
+        projectGrid.setItems(TestData.createProjectBeanList());
+        alignmentFileGrid.setItems(TestData.createAlignmentFileBeanList());
+        //TESTING -->
 
 
         return panel;

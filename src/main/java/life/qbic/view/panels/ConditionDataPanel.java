@@ -8,6 +8,7 @@ import life.qbic.model.Globals;
 import life.qbic.model.beans.AnnotationFileBean;
 import life.qbic.model.beans.FastaFileBean;
 import life.qbic.presenter.Presenter;
+import life.qbic.testing.TestData;
 import life.qbic.view.MyGrid;
 
 import java.util.LinkedList;
@@ -42,26 +43,10 @@ public class ConditionDataPanel extends DataPanel {
                 fastaGrid, gffGrid, datasetAccordion);
         wrapperLayout.addComponents(new InfoBar(Globals.CONDITION_DATA_SETTINGS_INFO), contentLayout);
 
-        //<-- DEBUG
-        List<FastaFileBean> fastaFileBeanList = new LinkedList<>();
-        for (int i = 0; i < 10; i++) {
-            FastaFileBean bean = new FastaFileBean();
-            bean.setName("Test Fasta " + i);
-            bean.setCreationDate("01-01-01");
-            bean.setSizeInKB(42);
-            fastaFileBeanList.add(bean);
-        }
-        fastaGrid.setItems(fastaFileBeanList);
-        List<AnnotationFileBean> annotationFileBeanList = new LinkedList<>();
-        for (int i = 0; i < 10; i++) {
-            AnnotationFileBean bean = new AnnotationFileBean();
-            bean.setName("Test Annotation " + i);
-            bean.setCreationDate("01-01-01");
-            bean.setSizeInKB(42);
-            annotationFileBeanList.add(bean);
-        }
-        gffGrid.setItems(annotationFileBeanList);
-        //DEBUG -->
+        //<-- TESTING
+        fastaGrid.setItems(TestData.createFastaFileBeanList());
+        gffGrid.setItems(TestData.createAnnotationFileBeanList());
+        //TESTING -->
     }
 
     /**

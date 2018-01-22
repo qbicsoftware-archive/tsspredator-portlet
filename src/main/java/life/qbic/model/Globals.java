@@ -9,7 +9,7 @@ public class Globals {
     public static final String DATA_PANEL_CAPTION = "Data Settings";
     public static final String PARAMETERS_PANEL_CAPTION = "Parameter Settings";
     public static final String COMPARE_CONDITIONS = "Compare Conditions";
-    public static final String COMPARE_GENOMES = "Compare Strain/Species";
+    public static final String COMPARE_GENOMES = "Compare Strains/Species";
     public static final String CONFIG_FILE_TMP_PATH = "/tmp/tssconfiguration.conf";
     public static final String PARAMETERS_PRESET = "Preset";
     public static final String PARAMETERS_CUSTOM = "Custom";
@@ -59,7 +59,7 @@ public class Globals {
             "Please enter the <b>Name</b> of this condition.<br>" +
                     "Then scroll down to select the <b>RNA-seq Graph Files</b> for this condition.";
     public static final String REPLICATE_TAB_INFO =
-            "You need to select 4 <b>Graph Files</b> (<i>*.gff</i>) per replicate. " +
+            "You need to select 4 <b>Wiggle Files</b> (<i>*.wig/*.gr</i>) per replicate. " +
                     "All the graph files that are contained in your project are listed below (<b>\"Available Graph Files\"</b>).<br>" +
                     "Please <i>drag'n'drop</i> them into the appropriate fields to select them.<br>" +
                     "If you've made a mistake, you can either drag the graph files from one field to another to swap them " +

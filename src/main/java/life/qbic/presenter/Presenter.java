@@ -311,7 +311,9 @@ public class Presenter {
                 .withConverter(Double::intValue, Integer::doubleValue)
                 .bind(ConfigFile::getAllowedCrossReplicateShift, ConfigFile::setAllowedCrossReplicateShift);
         //Matching Replicates -> Matching Replicates Slider
-        configFileBinder.forField(view.getParametersPanel().getMatchingReplicates()).bind(
+        configFileBinder.forField(view.getParametersPanel().getMatchingReplicates())
+                .asRequired("Please set a number")
+                .bind(
                 ConfigFile::getMatchingReplicates,
                 (configFile, value) -> {
                     if (value != null)

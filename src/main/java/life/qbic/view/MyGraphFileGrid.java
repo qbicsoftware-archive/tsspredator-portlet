@@ -35,14 +35,14 @@ public class MyGraphFileGrid extends Grid<GraphFileBean> {
     public MyGraphFileGrid(String caption) {
         super(caption);
         setStyleGenerator((StyleGenerator<GraphFileBean>) t -> this.getSelectedItems().contains(t) ? "selected": null);
-        float gridWidth = 400;
+        float gridWidth = 600;
         setWidth(gridWidth, Unit.PIXELS);
         addColumn(GraphFileBean::getName)
                 .setCaption("File name")
-                .setWidth(gridWidth / 2.25);
+                .setWidth(gridWidth / 1.6);
         addColumn(GraphFileBean::getCreationDate)
                 .setCaption("Creation Date")
-                .setWidth(gridWidth / 3.5);
+                .setWidth(gridWidth / 4.75);
         addColumn(GraphFileBean::getSizeInKB)
                 .setCaption("Size (kB)")
                 .setWidthUndefined();
