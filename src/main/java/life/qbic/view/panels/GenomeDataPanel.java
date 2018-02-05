@@ -60,7 +60,7 @@ public class GenomeDataPanel extends DataPanel {
             genomeData.addComponents(new HorizontalLayout(nameField, idField), fastaGrid, gffGrid);
             this.tab.addComponents(new InfoBar(Globals.GENOME_TAB_INFO),
                     genomeData,
-                    new Label("<b>RNA-seq graph files for this condition:</b>", ContentMode.HTML),
+                    new Label("<b>RNA-seq graph files for this genome:</b>", ContentMode.HTML),
                     replicatesSheet);
 
 

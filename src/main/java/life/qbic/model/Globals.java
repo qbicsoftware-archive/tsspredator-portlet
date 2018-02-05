@@ -48,7 +48,7 @@ public class Globals {
                     "of your project by clicking on them.<br>" +
                     "Then scroll down to enter genome and replicate data.<br>" +
                     "When you're done, click on <b>\"Parameter Settings\"</b> to continue. " +
-                    "You can always come back to this window by clicking on <b>\"Data Settings\"</b>";
+                    "You can always come back to this window by clicking on <b>\"Data Settings\"</b>.";
     public static final String GENOME_TAB_INFO =
             "Please enter the <b>Name</b> of this genome as well as its <b>Alignment ID</b> in the multiple alignment file.<br>" +
                     "Next, choose the <b>Nucleotide Sequence</b> file (<i>*.fasta</i>) and the <b>Annotation</b> file (<i>*.gff</i>) " +
@@ -108,11 +108,11 @@ public class Globals {
             "If the TSS lies further upstream, is is classified as orphan.";
     public static final String ANTISENSE_UTR_LENGTH_TEXT = "Set how far from the start or stop codon a TSS may lie in antisense orientation " +
             "to be classified as antisense.";
-    public static final String CROSS_DATASET_SHIFT_TEXT = "Set the maximal distance (in base pairs) between TSS candidates <i>from different datasets<i>" +
+    public static final String CROSS_DATASET_SHIFT_TEXT = "Set the maximal distance (in base pairs) between TSS candidates <i>from different datasets</i>" +
             " to be assigned to each other.";
-    public static final String CROSS_REPLICATE_SHIFT_TEXT = "Set the maximal distance (in base pairs) between TSS candidates <i>from different replicates<i>" +
+    public static final String CROSS_REPLICATE_SHIFT_TEXT = "Set the maximal distance (in base pairs) between TSS candidates <i>from different replicates</i>" +
             " to be assigned to each other.";
-    public static final String CLUSTER_METHOD_INFO = "TSS candidates which are closer than a specific distance (see slider to the right)" +
+    public static final String CLUSTER_METHOD_INFO = "TSS candidates which are closer than a specific distance (see slider to the right) " +
             "are clustered together.<br>Choose whether the first or the most highly expressed candidate is taken as a representative.";
     public static final String CLUSTERING_DISTANCE_TEXT = "Set the maximal distance (in base pairs) between TSS candidates to be clustered together.";
 

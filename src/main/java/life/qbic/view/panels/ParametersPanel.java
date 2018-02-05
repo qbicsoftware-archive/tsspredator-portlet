@@ -180,6 +180,7 @@ public class ParametersPanel extends CustomComponent {
             layout.addComponents(new HorizontalLayout(slider, infoButton), valueDisplay);
             layout.setComponentAlignment(valueDisplay, Alignment.BOTTOM_CENTER);
             layout.addStyleNames("parameter-setter");
+            slider.setWidth(200,Unit.PIXELS);
             setCompositionRoot(layout);
         }
     }
@@ -257,6 +258,7 @@ public class ParametersPanel extends CustomComponent {
                 0, 1, 0, Globals.BASE_HEIGHT_TEXT,
                 "");
         baseHeight.setEnabled(false);
+        baseHeight.setVisible(false);//Base Height is currently disabled
 
 
         //Post-prediction Part

@@ -749,8 +749,13 @@ public class Presenter {
                 FileWriter writer = new FileWriter(file);
                 writer.write(configText);
                 writer.close();
+                //Enable the download button
+                view.getDownloadButton().setEnabled(true);
+
             } catch (Exception e) {
                 presenterLogger.log(Level.ALL, "Error producing config file:" + e.getMessage());
+                //Disable the download button
+                view.getDownloadButton().setEnabled(false);
             }
         }
         return file;

@@ -15037,10 +15037,6 @@ div.v-layout.v-horizontal.v-widget {
 	background: lightblue;
 }
 
-.mytheme .v-disabled {
-	visibility: hidden;
-}
-
 .mytheme .my-navigation-layout {
 	float: left;
 	position: absolute;
@@ -15112,7 +15108,7 @@ div.v-layout.v-horizontal.v-widget {
 .mytheme .prediction-parameters-layout {
 	margin: 0;
 	position: absolute;
-	right: 0;
+	right: 1cm;
 }
 
 .mytheme .non-custom-parameter {

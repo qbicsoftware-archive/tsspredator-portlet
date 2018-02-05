@@ -39,7 +39,9 @@ public class AccordionLayoutMain extends CustomComponent {
             downloader.extend(downloadButton);
         });
         downloadButton = new Button("Download Config File");
+        downloadButton.setEnabled(false); //Button is not enabled until config file has been successfully created
         loadConfigButton = new Button("Load existing configuration");
+        loadConfigButton.setVisible(false);
         mainLayout.addComponents(contentAccordion, createConfigButton, downloadButton, loadConfigButton);
         setCompositionRoot(mainLayout);
     }
@@ -87,5 +89,7 @@ public class AccordionLayoutMain extends CustomComponent {
         return conditionDataPanel;
     }
 
-
+    public Button getDownloadButton() {
+        return downloadButton;
+    }
 }
