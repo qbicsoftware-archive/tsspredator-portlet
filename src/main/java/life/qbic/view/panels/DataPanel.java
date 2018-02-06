@@ -8,12 +8,16 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.GridDragSource;
 import com.vaadin.ui.components.grid.GridDropTarget;
 import life.qbic.model.Globals;
+import life.qbic.model.beans.AnnotationFileBean;
+import life.qbic.model.beans.FastaFileBean;
 import life.qbic.model.beans.GraphFileBean;
 import life.qbic.presenter.Presenter;
 import life.qbic.testing.TestData;
 import life.qbic.view.MyGraphFileGrid;
+import life.qbic.view.MyGrid;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -32,6 +36,8 @@ public abstract class DataPanel extends CustomComponent {
     Accordion datasetAccordion;
     ComboBox<Integer> numberOfDatasetsBox;
     ComboBox<Integer> numberOfReplicatesBox;
+    private List<GraphFileBean> graphFileBeans = new LinkedList<>();
+
 
     public DataPanel(Presenter presenter) {
         dataPanel = designPanel();
@@ -189,7 +195,9 @@ public abstract class DataPanel extends CustomComponent {
     public class ReplicateTab extends CustomComponent {
         VerticalLayout layout;
         MyGraphFileGrid treatedCoding, treatedTemplate, untreatedCoding, untreatedTemplate;
-        Grid<GraphFileBean> graphFileGrid;
+        private Grid<GraphFileBean> graphFileGrid;
+
+
         private GraphFileBean draggedItem;
 
         /**
@@ -229,6 +237,8 @@ public abstract class DataPanel extends CustomComponent {
             graphFileGrid.addStyleName("my-file-grid");
             graphFileGrid.sort(graphFileGrid.getColumn("Name"));
 
+            graphFileGrid.setItems(graphFileBeans);
+
 
             //Drag and drop implementation
             setupDragSource(graphFileGrid);
@@ -266,9 +276,6 @@ public abstract class DataPanel extends CustomComponent {
             layout.setComponentAlignment(graphFileGrid, Alignment.BOTTOM_CENTER);
             setCompositionRoot(layout);
 
-            //<-- TESTING
-            graphFileGrid.setItems(TestData.createGraphFileBeanList());
-            //TESTING -->
 
         }
 
@@ -313,6 +320,10 @@ public abstract class DataPanel extends CustomComponent {
         public MyGraphFileGrid getUntreatedTemplate() {
             return untreatedTemplate;
         }
+
+        public Grid<GraphFileBean> getGraphFileGrid() {
+            return graphFileGrid;
+        }
     } //End of inner class ReplicateTab
 
     /**
@@ -353,4 +364,7 @@ public abstract class DataPanel extends CustomComponent {
         return (DatasetTab) datasetAccordion.getTab(index).getComponent();
     }
 
+    public List<GraphFileBean> getGraphFileBeans() {
+        return graphFileBeans;
+    }
 }

@@ -26,7 +26,8 @@ public class MyGrid<T> extends Grid<T> {
 
         addSelectionListener((SelectionListener<T>) selectionEvent -> {
             if (!selectionEvent.getFirstSelectedItem().isPresent()) {
-                select(selectedItem);
+                if (selectedItem != null)
+                    select(selectedItem);
             } else if (selectionEvent.isUserOriginated()) {
                 selectedItem = selectionEvent.getFirstSelectedItem().get();
                 Notification.show(selectionEvent.getFirstSelectedItem().get().toString() + " has been selected");

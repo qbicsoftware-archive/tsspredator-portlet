@@ -7,19 +7,16 @@ import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Setter;
 import com.vaadin.ui.Notification;
 import life.qbic.model.Globals;
+import life.qbic.model.Model;
 import life.qbic.model.beans.*;
 import life.qbic.model.config.ConfigFile;
-import life.qbic.model.config.Genome;
-import life.qbic.model.config.Replicate;
-import life.qbic.view.AccordionLayoutMain;
-import life.qbic.view.MyGrid;
+import life.qbic.view.MainView;
 import life.qbic.view.panels.ConditionDataPanel;
 import life.qbic.view.panels.DataPanel;
 import life.qbic.view.panels.GenomeDataPanel;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -29,8 +26,8 @@ import java.util.stream.IntStream;
  * @author jmueller
  */
 public class Presenter {
-    private ConfigFile configFile;
-    private AccordionLayoutMain view;
+    private Model model;
+    private MainView view;
     private Binder<ConfigFile> configFileBinder;
     private final static Logger presenterLogger = Logger.getLogger(Presenter.class.getName());
 
@@ -48,14 +45,17 @@ public class Presenter {
      * The numbers of datasets and replicates are both initialized to 1
      * The Binder that connects the view and the configFile is initialized
      */
-    public Presenter() {
-        configFile = new ConfigFile();
-        configFile.setGenomeList(new ArrayList<>());
+    public Presenter(MainView view, Model model) {
+        this.view = view;
+        this.model = model;
+        view.setPresenter(this);
         addDatasets(1);
         addReplicates(1);
         setInitialConfigParameters();
         configFileBinder = new Binder<>();
-        configFileBinder.setBean(configFile);
+        configFileBinder.setBean(model.getConfigFile());
+        view.createView();
+
     }
 
     /**
@@ -65,7 +65,6 @@ public class Presenter {
     public void initFields() {
         view.getParametersPanel().getPresetSelection().setSelectedItem("Default");
         view.getGenomeDataPanel().initAccordion();
-
     }
 
     /**
@@ -314,12 +313,12 @@ public class Presenter {
         configFileBinder.forField(view.getParametersPanel().getMatchingReplicates())
                 .asRequired("Please set a number")
                 .bind(
-                ConfigFile::getMatchingReplicates,
-                (configFile, value) -> {
-                    if (value != null)
-                        configFile.setMatchingReplicates(value);
+                        ConfigFile::getMatchingReplicates,
+                        (configFile, value) -> {
+                            if (value != null)
+                                configFile.setMatchingReplicates(value);
 
-                });
+                        });
         //UTR Length -> UTR Length Slider
         configFileBinder.forField(view.getParametersPanel().getUtrLength())
                 .withConverter(Double::intValue, Integer::doubleValue)
@@ -390,8 +389,22 @@ public class Presenter {
 
     }
 
+    /**
+     * Accesses data from the model and hands it over to the view components
+     */
+    public void displayData() {
+        view.getGeneralConfigPanel().getProjectGrid().setItems(model.getProjectBeans());
+        view.getGeneralConfigPanel().getAlignmentFileGrid().setItems(model.getAlignmentFileBeans());
+        view.getGenomeDataPanel().getFastaFileBeans().addAll(model.getFastaFileBeans());
+        view.getGenomeDataPanel().getAnnotationFileBeans().addAll(model.getAnnotationFileBeans());
+        view.getGenomeDataPanel().getGraphFileBeans().addAll(model.getGraphFileBeans());
+        view.getConditionDataPanel().getFastaGrid().setItems(model.getFastaFileBeans());
+        view.getConditionDataPanel().getGffGrid().setItems(model.getAnnotationFileBeans());
+        view.getConditionDataPanel().getGraphFileBeans().addAll(model.getGraphFileBeans());
+    }
 
     public void setInitialConfigParameters() {
+        ConfigFile configFile = model.getConfigFile();
         configFile.setModeConditions(Globals.IS_CONDITIONS_INIT);
         configFile.setNumberOfDatasets(Globals.NUMBER_OF_DATASETS_INIT);
         configFile.setNumberOfReplicates(Globals.NUMBER_OF_REPLICATES_INIT);
@@ -413,7 +426,7 @@ public class Presenter {
      * This method is called whenever a new dataset is added to the project.
      */
     public void initDatasetBindings(int index) {
-        if (configFile.isModeConditions()) {
+        if (model.getConfigFile().isModeConditions()) {
             ConditionDataPanel.ConditionTab conditionTab = (ConditionDataPanel.ConditionTab) view.getConditionDataPanel().getDatasetTab(index);
             configFileBinder.forField(conditionTab.getNameField()).asRequired("Please enter the name of the condition")
                     .bind(new ValueProvider<ConfigFile, String>() {
@@ -481,10 +494,10 @@ public class Presenter {
                                 }
                             });
 
-            configFileBinder.forField(genomeTab.getGffGrid().asSingleSelect())
+            configFileBinder.forField(genomeTab.getAnnotationFileGrid().asSingleSelect())
                     .withValidator(annotationFileBean -> {
                         if (annotationFileBean.toString().equals("null (null, 0kB)")) {
-                            genomeTab.getGffGrid().setComponentError(new ErrorMessage() {
+                            genomeTab.getAnnotationFileGrid().setComponentError(new ErrorMessage() {
                                 @Override
                                 public ErrorLevel getErrorLevel() {
                                     return ErrorLevel.ERROR;
@@ -497,7 +510,7 @@ public class Presenter {
                             });
                             return false;
                         } else {
-                            genomeTab.getGffGrid().setComponentError(null);
+                            genomeTab.getAnnotationFileGrid().setComponentError(null);
                             return true;
                         }
                     }, "")
@@ -514,7 +527,7 @@ public class Presenter {
      */
     public void initReplicateBindings(int datasetIndex, int replicateIndex) {
         DataPanel.ReplicateTab replicateTab;
-        if (configFile.isModeConditions()) {
+        if (model.getConfigFile().isModeConditions()) {
             replicateTab = view.getConditionDataPanel().getDatasetTab(datasetIndex).getReplicateTab(replicateIndex);
         } else {
             replicateTab = view.getGenomeDataPanel().getDatasetTab(datasetIndex).getReplicateTab(replicateIndex);
@@ -649,18 +662,8 @@ public class Presenter {
      * @param datasetsToAdd
      */
     private void addDatasets(int datasetsToAdd) {
-        for (int i = 0; i < datasetsToAdd; i++) {
-            Genome currentGenome = new Genome();
-            //IDs of conditions are set automatically
-            if (configFile.isModeConditions()) {
-                currentGenome.setAlignmentID("" + (configFile.getNumberOfDatasets() - datasetsToAdd + i));
-            }
-            //Add as many replicates as the other Genomes have
-            for (int j = 0; j < configFile.getNumberOfReplicates(); j++) {
-                currentGenome.getReplicateList().add(new Replicate());
-            }
-            configFile.getGenomeList().add(currentGenome);
-        }
+        model.addDatasets(datasetsToAdd);
+
     }
 
 
@@ -670,11 +673,7 @@ public class Presenter {
      * @param datasetsToRemove
      */
     public void removeDatasets(int datasetsToRemove) {
-        int oldGenomeListSize = configFile.getGenomeList().size();
-        int startIndex = oldGenomeListSize - datasetsToRemove;
-        for (int i = startIndex; i < oldGenomeListSize; i++)
-            //Remove tail until desired size is reached
-            configFile.getGenomeList().remove(configFile.getGenomeList().size() - 1);
+        model.removeDatasets(datasetsToRemove);
     }
 
 
@@ -685,11 +684,7 @@ public class Presenter {
      * @param replicatesToAdd
      */
     public void addReplicates(int replicatesToAdd) {
-        for (int i = 0; i < replicatesToAdd; i++) {
-            for (Genome genome : configFile.getGenomeList()) {
-                genome.getReplicateList().add(new Replicate());
-            }
-        }
+        model.addReplicates(replicatesToAdd);
     }
 
     /**
@@ -698,14 +693,7 @@ public class Presenter {
      * @param replicatesToRemove
      */
     public void removeReplicates(int replicatesToRemove) {
-        int oldReplicateListSize = configFile.getGenomeList().get(0).getReplicateList().size();
-        int startIndex = oldReplicateListSize - replicatesToRemove;
-        for (Genome genome : configFile.getGenomeList()) {
-            for (int i = startIndex; i < oldReplicateListSize; i++) {
-                //Remove tail until desired size is reached
-                genome.getReplicateList().remove(genome.getReplicateList().size() - 1);
-            }
-        }
+        model.removeReplicates(replicatesToRemove);
     }
 
     /**
@@ -716,7 +704,7 @@ public class Presenter {
      * @param id
      */
     public void updateReplicateID(int datasetIndex, int replicateIndex, String id) {
-        configFile
+        model.getConfigFile()
                 .getGenomeList()
                 .get(datasetIndex)
                 .getReplicateList()
@@ -739,13 +727,13 @@ public class Presenter {
         //There will always be 'silent' errors because of non-visible fields.
         //If we're in condition mode, it's 3 errors, in genome mode it's 4 errors
         //TODO: It's bad practice to hard-code the silent error numbers - is there a way to work around this?
-        int silentErrors = configFile.isModeConditions() ? 0 : 2;
+        int silentErrors = model.getConfigFile().isModeConditions() ? 0 : 2;
         if (validationStatus.getValidationErrors().size() > silentErrors) {
             Notification.show("Your configuration couldn't be saved because there are errors (" + (validationStatus.getValidationErrors().size() - silentErrors)
                     + "). Please check the fields marked with a red '!'.");
         } else {
             try {
-                String configText = configFile.toString();
+                String configText = model.getConfigFile().toString();
                 FileWriter writer = new FileWriter(file);
                 writer.write(configText);
                 writer.close();
@@ -769,6 +757,7 @@ public class Presenter {
         if (preset == null) { //Happens when custom is selected
             return;
         }
+        ConfigFile configFile = model.getConfigFile();
         switch (preset) {
 
             case VERY_SPECIFIC:
@@ -828,7 +817,7 @@ public class Presenter {
 
     }
 
-    public void setView(AccordionLayoutMain view) {
+    public void setView(MainView view) {
         this.view = view;
     }
 
@@ -841,14 +830,14 @@ public class Presenter {
     }
 
     public boolean isModeConditions() {
-        return configFile.isModeConditions();
+        return model.getConfigFile().isModeConditions();
     }
 
     public int getNumberOfDatasets() {
-        return configFile.getNumberOfDatasets();
+        return model.getConfigFile().getNumberOfDatasets();
     }
 
     public int getNumberOfReplicates() {
-        return configFile.getNumberOfReplicates();
+        return model.getConfigFile().getNumberOfReplicates();
     }
 }

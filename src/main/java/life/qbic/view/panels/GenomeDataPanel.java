@@ -6,13 +6,15 @@ import life.qbic.model.Globals;
 import life.qbic.model.beans.AnnotationFileBean;
 import life.qbic.model.beans.FastaFileBean;
 import life.qbic.presenter.Presenter;
-import life.qbic.testing.TestData;
 import life.qbic.view.MyGrid;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class GenomeDataPanel extends DataPanel {
+
+    private List<FastaFileBean> fastaFileBeans = new LinkedList<>();
+    private List<AnnotationFileBean> annotationFileBeans = new LinkedList<>();
 
     /**
      * After calling the Constructor of the superclass, the components are added to the wrapperLayout.
@@ -26,6 +28,7 @@ public class GenomeDataPanel extends DataPanel {
         contentLayout.addComponents(numberOfDatasetsBox, numberOfReplicatesBox, datasetAccordion);
         wrapperLayout.addComponents(new InfoBar(Globals.GENOME_DATA_SETTINGS_INFO), contentLayout);
 
+
     }
 
 
@@ -34,8 +37,8 @@ public class GenomeDataPanel extends DataPanel {
      */
     public class GenomeTab extends DatasetTab {
         TextField nameField, idField;
-        Grid<FastaFileBean> fastaGrid;
-        Grid<AnnotationFileBean> gffGrid;
+        private Grid<FastaFileBean> fastaGrid;
+        private Grid<AnnotationFileBean> annotationFileGrid;
 
         /**
          * Each genome tab gets components for its name, its alignment id, its fasta file and its annotation file.
@@ -52,23 +55,21 @@ public class GenomeDataPanel extends DataPanel {
             fastaGrid.addColumn(FastaFileBean::getCreationDate).setCaption("Creation Date");
             fastaGrid.addColumn(FastaFileBean::getSizeInKB).setCaption("Size (kB)");
             fastaGrid.addStyleName("my-file-grid");
-            gffGrid = new MyGrid<>("Genome annotation (GFF)");
-            gffGrid.addColumn(AnnotationFileBean::getName).setCaption("File name");
-            gffGrid.addColumn(AnnotationFileBean::getCreationDate).setCaption("Creation Date");
-            gffGrid.addColumn(AnnotationFileBean::getSizeInKB).setCaption("Size (kB)");
-            gffGrid.addStyleName("my-file-grid");
-            genomeData.addComponents(new HorizontalLayout(nameField, idField), fastaGrid, gffGrid);
+            annotationFileGrid = new MyGrid<>("Genome annotation (GFF)");
+            annotationFileGrid.addColumn(AnnotationFileBean::getName).setCaption("File name");
+            annotationFileGrid.addColumn(AnnotationFileBean::getCreationDate).setCaption("Creation Date");
+            annotationFileGrid.addColumn(AnnotationFileBean::getSizeInKB).setCaption("Size (kB)");
+            annotationFileGrid.addStyleName("my-file-grid");
+
+            fastaGrid.setItems(fastaFileBeans);
+            annotationFileGrid.setItems(annotationFileBeans);
+
+
+            genomeData.addComponents(new HorizontalLayout(nameField, idField), fastaGrid, annotationFileGrid);
             this.tab.addComponents(new InfoBar(Globals.GENOME_TAB_INFO),
                     genomeData,
                     new Label("<b>RNA-seq graph files for this genome:</b>", ContentMode.HTML),
                     replicatesSheet);
-
-
-
-            //<-- TESTING
-            fastaGrid.setItems(TestData.createFastaFileBeanList());
-            gffGrid.setItems(TestData.createAnnotationFileBeanList());
-            //TESTING -->
 
         }
 
@@ -84,8 +85,8 @@ public class GenomeDataPanel extends DataPanel {
             return fastaGrid;
         }
 
-        public Grid<AnnotationFileBean> getGffGrid() {
-            return gffGrid;
+        public Grid<AnnotationFileBean> getAnnotationFileGrid() {
+            return annotationFileGrid;
         }
     }
 
@@ -93,5 +94,11 @@ public class GenomeDataPanel extends DataPanel {
         return new GenomeTab(index);
     }
 
+    public List<FastaFileBean> getFastaFileBeans() {
+        return fastaFileBeans;
+    }
 
+    public List<AnnotationFileBean> getAnnotationFileBeans() {
+        return annotationFileBeans;
+    }
 }

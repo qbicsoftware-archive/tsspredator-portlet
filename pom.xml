@@ -130,7 +130,7 @@
 			<artifactId>portal-service</artifactId>
 			<version>${liferay.version}</version>
 			<!-- compile for local testing - provided for portlet -->
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
@@ -138,7 +138,7 @@
 			<artifactId>util-java</artifactId>
 			<version>${liferay.version}</version>
 			<!-- compile for local testing - provided for portlet -->
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>

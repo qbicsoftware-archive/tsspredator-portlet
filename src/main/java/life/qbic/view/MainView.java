@@ -18,7 +18,7 @@ import java.io.File;
  *
  * @author jmueller
  */
-public class AccordionLayoutMain extends CustomComponent {
+public class MainView extends CustomComponent {
     private VerticalLayout mainLayout;
     private Presenter presenter;
     private Accordion contentAccordion;
@@ -29,10 +29,13 @@ public class AccordionLayoutMain extends CustomComponent {
     private GenomeDataPanel genomeDataPanel;
     private ParametersPanel parametersPanel;
 
-    public AccordionLayoutMain(Presenter presenter) {
+    public MainView() {
         this.mainLayout = new VerticalLayout();
-        this.presenter = presenter;
-        createContentAccordion();
+        setCompositionRoot(mainLayout);
+    }
+
+    public void createView(){
+        buildContentAccordion();
         createConfigButton = new Button("Create Config File", (Button.ClickListener) clickEvent -> {
             File file = this.presenter.produceConfigFile();
             downloader = new FileDownloader(new FileResource(file));
@@ -43,13 +46,12 @@ public class AccordionLayoutMain extends CustomComponent {
         loadConfigButton = new Button("Load existing configuration");
         loadConfigButton.setVisible(false);
         mainLayout.addComponents(contentAccordion, createConfigButton, downloadButton, loadConfigButton);
-        setCompositionRoot(mainLayout);
     }
 
     /**
      * Creates the main Accordion and adds the panels to it
      */
-    private void createContentAccordion() {
+    private void buildContentAccordion() {
         contentAccordion = new Accordion();
         generalConfigPanel = new GeneralConfigPanel(presenter);
 
@@ -68,6 +70,9 @@ public class AccordionLayoutMain extends CustomComponent {
 
         contentAccordion.setWidth(100, Unit.PERCENTAGE);
     }
+
+
+
 
     public Accordion getContentAccordion() {
         return contentAccordion;
@@ -91,5 +96,13 @@ public class AccordionLayoutMain extends CustomComponent {
 
     public Button getDownloadButton() {
         return downloadButton;
+    }
+
+    public Presenter getPresenter() {
+        return presenter;
+    }
+
+    public void setPresenter(Presenter presenter) {
+        this.presenter = presenter;
     }
 }

@@ -17,6 +17,8 @@ import java.util.List;
 public class ConditionDataPanel extends DataPanel {
     Grid<FastaFileBean> fastaGrid;
     Grid<AnnotationFileBean> gffGrid;
+    private List<FastaFileBean> fastaFileBeans = new LinkedList<>();
+    private List<AnnotationFileBean> annotationFileBeans = new LinkedList<>();
 
     /**
      * After calling the Constructor of the superclass, the components for the fasta file and the annotation file
@@ -43,11 +45,10 @@ public class ConditionDataPanel extends DataPanel {
                 fastaGrid, gffGrid, datasetAccordion);
         wrapperLayout.addComponents(new InfoBar(Globals.CONDITION_DATA_SETTINGS_INFO), contentLayout);
 
-        //<-- TESTING
-        fastaGrid.setItems(TestData.createFastaFileBeanList());
-        gffGrid.setItems(TestData.createAnnotationFileBeanList());
-        //TESTING -->
+        fastaGrid.setItems(fastaFileBeans);
+        gffGrid.setItems(annotationFileBeans);
     }
+
 
     /**
      * This class represents a tab in the DatasetAccordion when comparing conditions.
