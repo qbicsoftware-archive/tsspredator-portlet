@@ -23,9 +23,6 @@ public class MyUI extends UI {
         Model model = new Model();
         MainView view = new MainView();
         Presenter presenter = new Presenter(view, model);
-        presenter.initFields();
-        presenter.initBindings();
-        presenter.displayData();
         view.setWidth(UI.getCurrent().getPage().getBrowserWindowWidth(), Unit.PIXELS);
         setContent(view);
     }

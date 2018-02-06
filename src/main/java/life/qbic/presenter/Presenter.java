@@ -52,30 +52,28 @@ public class Presenter {
         addDatasets(1);
         addReplicates(1);
         setInitialConfigParameters();
+        view.createView();
         configFileBinder = new Binder<>();
         configFileBinder.setBean(model.getConfigFile());
-        view.createView();
 
-    }
-
-    /**
-     * Initializes the fields of the view
-     * TODO: Move stuff from the view here so the view contains less logic
-     */
-    public void initFields() {
         view.getParametersPanel().getPresetSelection().setSelectedItem("Default");
         view.getGenomeDataPanel().initAccordion();
+        displayData();
+
+        //Initialize Bindings between view and model via a configFileBinder
+        connectGeneralSettingsToConfigModel();
+        connectStaticDataSettingsToConfigModel();
+        connectParameterSettingsToConfigModel();
+
+
     }
 
     /**
-     * Connects the view to the config file via the configFileBinder:
-     * All the static parameters (i.e. all parameters except the dataset and replicate parameters, which might
-     * increase or decrease in number at runtime) are bound here. That means, if a parameter, e.g. a slider,
-     * is changed in the view, the change is directly applied to the config file.
+     * Connects the general settings of the view to the config file via the configFileBinder:
      * Each binding is labelled in the code as follows:
      * <Config File Value> -> <View Component>
      */
-    public void initBindings() {
+    private void connectGeneralSettingsToConfigModel() {
         //Project Name -> Project Name Grid
         configFileBinder.forField(view.getGeneralConfigPanel().getProjectGrid().asSingleSelect())
                 .withValidator(projectBean -> {
@@ -102,6 +100,86 @@ public class Presenter {
                         },
                         (Setter<ConfigFile, ProjectBean>) (configFile, projectBean) -> configFile.setProjectName(projectBean.getName()));
 
+        //Project Type (Mode) -> Project Type Button Group
+        configFileBinder.forField(view.getGeneralConfigPanel().getProjectTypeButtonGroup())
+                .bind(new ValueProvider<ConfigFile, String>() {
+                          @Override
+                          public String apply(ConfigFile configFile) {
+                              return configFile.isModeConditions() ? Globals.COMPARE_CONDITIONS : Globals.COMPARE_GENOMES;
+                          }
+                      },
+                        new Setter<ConfigFile, String>() {
+                            @Override
+                            public void accept(ConfigFile configFile, String s) {
+                                view.getGenomeDataPanel().getNumberOfDatasetsBox().setValue(1);
+                                view.getGenomeDataPanel().getNumberOfReplicatesBox().setValue(1);
+                                view.getConditionDataPanel().getNumberOfDatasetsBox().setValue(1);
+                                view.getConditionDataPanel().getNumberOfReplicatesBox().setValue(1);
+
+
+                                boolean isModeConditions = s.equals(Globals.COMPARE_CONDITIONS);
+                                //Hide one of the two DataPanels and show the other one:
+                                //The genomeDataPanel has tab index 1, the conditionDataPanel has tab index 2
+                                // in the contentAccordion
+                                view.getContentAccordion().getTab(1).setVisible(!isModeConditions);
+                                view.getContentAccordion().getTab(2).setVisible(isModeConditions);
+                                view.getParametersPanel().getCrossDatasetShift().setCaption(
+                                        isModeConditions ? "Allowed Cross-Condition Shift" : "Allowed Cross-Genome Shift"
+                                );
+                                configFile.setModeConditions(isModeConditions);
+                                configFile.setNumberOfDatasets(1);
+                                configFile.setNumberOfReplicates(1);
+                                view.getGeneralConfigPanel().getAlignmentFileGrid().setVisible(!isModeConditions);
+                                if (isModeConditions) {
+                                    view.getGenomeDataPanel().getDatasetAccordion().removeAllComponents();
+                                    view.getConditionDataPanel().initAccordion();
+                                } else {
+                                    view.getConditionDataPanel().getDatasetAccordion().removeAllComponents();
+                                    view.getGenomeDataPanel().initAccordion();
+                                }
+
+
+                            }
+                        }
+                );
+
+        //Alignment File -> Alignment File Grid
+        configFileBinder.forField(view.getGeneralConfigPanel().getAlignmentFileGrid().asSingleSelect())
+                .withValidator(alignmentFileBean -> {
+                    if (alignmentFileBean.toString().equals("null (null, 0kB)")) {
+                        view.getGeneralConfigPanel().getAlignmentFileGrid().setComponentError(new ErrorMessage() {
+                            @Override
+                            public ErrorLevel getErrorLevel() {
+                                return ErrorLevel.ERROR;
+                            }
+
+                            @Override
+                            public String getFormattedHtmlMessage() {
+                                return "Please select an alignment file by clicking on it!";
+                            }
+                        });
+                        return false;
+                    } else {
+                        view.getGeneralConfigPanel().getAlignmentFileGrid().setComponentError(null);
+                        return true;
+                    }
+                }, "")
+                .bind((ValueProvider<ConfigFile, AlignmentFileBean>) configFile -> {
+                            return new AlignmentFileBean(); //TODO: Return something useful here
+                        },
+                        (Setter<ConfigFile, AlignmentFileBean>) (configFile, alignmentFileBean) -> configFile.setAlignmentFile(alignmentFileBean.getName()));
+
+    }
+
+    /**
+     * Connects the data settings of the view to the config file via the configFileBinder:
+     * All the static parameters (i.e. all parameters except the dataset and replicate parameters, which might
+     * increase or decrease in number at runtime) are bound here. That means, if a parameter, e.g. a slider,
+     * is changed in the view, the change is directly applied to the config file.
+     * Each binding is labelled in the code as follows:
+     * <Config File Value> -> <View Component>
+     */
+    private void connectStaticDataSettingsToConfigModel() {
         //Number of Datasets -> Number of Datasets Box (Genome Data Panel)
         configFileBinder.forField(view.getGenomeDataPanel().getNumberOfDatasetsBox())
                 .asRequired("Please set a number")
@@ -180,54 +258,12 @@ public class Presenter {
                             view.getConditionDataPanel().updateAccordion(getNumberOfDatasets(), oldReplicateCount);
                         });
 
-        //Project Type (Mode) -> Project Type Button Group
-        configFileBinder.forField(view.getGeneralConfigPanel().getProjectTypeButtonGroup())
-                .bind(new ValueProvider<ConfigFile, String>() {
-                          @Override
-                          public String apply(ConfigFile configFile) {
-                              return configFile.isModeConditions() ? Globals.COMPARE_CONDITIONS : Globals.COMPARE_GENOMES;
-                          }
-                      },
-                        new Setter<ConfigFile, String>() {
-                            @Override
-                            public void accept(ConfigFile configFile, String s) {
-                                view.getGenomeDataPanel().getNumberOfDatasetsBox().setValue(1);
-                                view.getGenomeDataPanel().getNumberOfReplicatesBox().setValue(1);
-                                view.getConditionDataPanel().getNumberOfDatasetsBox().setValue(1);
-                                view.getConditionDataPanel().getNumberOfReplicatesBox().setValue(1);
-
-
-                                boolean isModeConditions = s.equals(Globals.COMPARE_CONDITIONS);
-                                //Hide one of the two DataPanels and show the other one:
-                                //The genomeDataPanel has tab index 1, the conditionDataPanel has tab index 2
-                                // in the contentAccordion
-                                view.getContentAccordion().getTab(1).setVisible(!isModeConditions);
-                                view.getContentAccordion().getTab(2).setVisible(isModeConditions);
-                                view.getParametersPanel().getCrossDatasetShift().setCaption(
-                                        isModeConditions ? "Allowed Cross-Condition Shift" : "Allowed Cross-Genome Shift"
-                                );
-                                configFile.setModeConditions(isModeConditions);
-                                configFile.setNumberOfDatasets(1);
-                                configFile.setNumberOfReplicates(1);
-                                view.getGeneralConfigPanel().getAlignmentFileGrid().setVisible(!isModeConditions);
-                                if (isModeConditions) {
-                                    view.getGenomeDataPanel().getDatasetAccordion().removeAllComponents();
-                                    view.getConditionDataPanel().initAccordion();
-                                } else {
-                                    view.getConditionDataPanel().getDatasetAccordion().removeAllComponents();
-                                    view.getGenomeDataPanel().initAccordion();
-                                }
-
-
-                            }
-                        }
-                );
-
-        //Alignment File -> Alignment File Grid
-        configFileBinder.forField(view.getGeneralConfigPanel().getAlignmentFileGrid().asSingleSelect())
-                .withValidator(alignmentFileBean -> {
-                    if (alignmentFileBean.toString().equals("null (null, 0kB)")) {
-                        view.getGeneralConfigPanel().getAlignmentFileGrid().setComponentError(new ErrorMessage() {
+        //Bindings for conditionDataPanel exclusively
+        //Fasta File -> Fasta Grid
+        configFileBinder.forField(view.getConditionDataPanel().getFastaGrid().asSingleSelect())
+                .withValidator(fastaFileBean -> {
+                    if (fastaFileBean.toString().equals("null (null, 0kB)")) {
+                        view.getConditionDataPanel().getFastaGrid().setComponentError(new ErrorMessage() {
                             @Override
                             public ErrorLevel getErrorLevel() {
                                 return ErrorLevel.ERROR;
@@ -235,20 +271,61 @@ public class Presenter {
 
                             @Override
                             public String getFormattedHtmlMessage() {
-                                return "Please select an alignment file by clicking on it!";
+                                return "Please select a Fasta file by double clicking it!";
                             }
                         });
                         return false;
                     } else {
-                        view.getGeneralConfigPanel().getAlignmentFileGrid().setComponentError(null);
+                        view.getConditionDataPanel().getFastaGrid().setComponentError(null);
                         return true;
                     }
                 }, "")
-                .bind((ValueProvider<ConfigFile, AlignmentFileBean>) configFile -> {
-                            return new AlignmentFileBean(); //TODO: Return something useful here
-                        },
-                        (Setter<ConfigFile, AlignmentFileBean>) (configFile, alignmentFileBean) -> configFile.setAlignmentFile(alignmentFileBean.getName()));
+                .bind((ValueProvider<ConfigFile, FastaFileBean>) configFile -> new FastaFileBean(),
+                        (Setter<ConfigFile, FastaFileBean>) (configFile, fastaFileBean) -> configFile.setConditionFasta(fastaFileBean.getName()));
+        //Alignment File -> GFF Grid
+        configFileBinder.forField(view.getConditionDataPanel().getGffGrid().asSingleSelect())
+                .withValidator(annotationFileBean -> {
+                    if (annotationFileBean.toString().equals("null (null, 0kB)")) {
+                        view.getConditionDataPanel().getGffGrid().setComponentError(new ErrorMessage() {
+                            @Override
+                            public ErrorLevel getErrorLevel() {
+                                return ErrorLevel.ERROR;
+                            }
 
+                            @Override
+                            public String getFormattedHtmlMessage() {
+                                return "Please select an annotation file by clicking on it!";
+                            }
+                        });
+                        return false;
+                    } else {
+                        view.getConditionDataPanel().getGffGrid().setComponentError(null);
+                        return true;
+                    }
+                }, "")
+                .bind((ValueProvider<ConfigFile, AnnotationFileBean>) configFile -> new AnnotationFileBean(),
+                        (Setter<ConfigFile, AnnotationFileBean>) (configFile, annotationFileBean) -> configFile.setConditionGFF(annotationFileBean.getName()));
+
+        //Bind the matching replicates combobox in the parameters panel
+        //to the number of replicates comboboxes in the two data panels so the first can't exceed the latter
+        view.getGenomeDataPanel().getNumberOfReplicatesBox().addValueChangeListener(vce -> {
+            view.getParametersPanel().getMatchingReplicates().setItems(IntStream.rangeClosed(1, getNumberOfReplicates())
+                    .boxed().collect(Collectors.toList()));
+        });
+        view.getConditionDataPanel().getNumberOfReplicatesBox().addValueChangeListener(vce -> {
+            view.getParametersPanel().getMatchingReplicates().setItems(IntStream.rangeClosed(1, getNumberOfReplicates())
+                    .boxed().collect(Collectors.toList()));
+        });
+
+
+    }
+
+    /**
+     * Connects the parameter settings of the view to the config file via the configFileBinder:
+     * Each binding is labelled in the code as follows:
+     * <Config File Value> -> <View Component>
+     */
+    private void connectParameterSettingsToConfigModel() {
         //Write Normalized Graphs? -> Write Normalized Graphs CheckBox
         configFileBinder.forField(view.getParametersPanel().getWriteNormalizedGraphs())
                 .bind(ConfigFile::isWriteGraphs,
@@ -328,66 +405,8 @@ public class Presenter {
                 .withConverter(Double::intValue, Integer::doubleValue)
                 .bind(ConfigFile::getAntisenseUtrLength, ConfigFile::setAntisenseUtrLength);
 
-        //Bindings for conditionDataPanel exclusively
-        //Fasta File -> Fasta Grid
-        configFileBinder.forField(view.getConditionDataPanel().getFastaGrid().asSingleSelect())
-                .withValidator(fastaFileBean -> {
-                    if (fastaFileBean.toString().equals("null (null, 0kB)")) {
-                        view.getConditionDataPanel().getFastaGrid().setComponentError(new ErrorMessage() {
-                            @Override
-                            public ErrorLevel getErrorLevel() {
-                                return ErrorLevel.ERROR;
-                            }
-
-                            @Override
-                            public String getFormattedHtmlMessage() {
-                                return "Please select a Fasta file by double clicking it!";
-                            }
-                        });
-                        return false;
-                    } else {
-                        view.getConditionDataPanel().getFastaGrid().setComponentError(null);
-                        return true;
-                    }
-                }, "")
-                .bind((ValueProvider<ConfigFile, FastaFileBean>) configFile -> new FastaFileBean(),
-                        (Setter<ConfigFile, FastaFileBean>) (configFile, fastaFileBean) -> configFile.setConditionFasta(fastaFileBean.getName()));
-        //Alignment File -> GFF Grid
-        configFileBinder.forField(view.getConditionDataPanel().getGffGrid().asSingleSelect())
-                .withValidator(annotationFileBean -> {
-                    if (annotationFileBean.toString().equals("null (null, 0kB)")) {
-                        view.getConditionDataPanel().getGffGrid().setComponentError(new ErrorMessage() {
-                            @Override
-                            public ErrorLevel getErrorLevel() {
-                                return ErrorLevel.ERROR;
-                            }
-
-                            @Override
-                            public String getFormattedHtmlMessage() {
-                                return "Please select an annotation file by clicking on it!";
-                            }
-                        });
-                        return false;
-                    } else {
-                        view.getConditionDataPanel().getGffGrid().setComponentError(null);
-                        return true;
-                    }
-                }, "")
-                .bind((ValueProvider<ConfigFile, AnnotationFileBean>) configFile -> new AnnotationFileBean(),
-                        (Setter<ConfigFile, AnnotationFileBean>) (configFile, annotationFileBean) -> configFile.setConditionGFF(annotationFileBean.getName()));
-
-        //Bind the matching replicates combobox in the parameters panel
-        //to the number of replicates comboboxes in the two data panels so the first can't exceed the latter
-        view.getGenomeDataPanel().getNumberOfReplicatesBox().addValueChangeListener(vce -> {
-            view.getParametersPanel().getMatchingReplicates().setItems(IntStream.rangeClosed(1, getNumberOfReplicates())
-                    .boxed().collect(Collectors.toList()));
-        });
-        view.getConditionDataPanel().getNumberOfReplicatesBox().addValueChangeListener(vce -> {
-            view.getParametersPanel().getMatchingReplicates().setItems(IntStream.rangeClosed(1, getNumberOfReplicates())
-                    .boxed().collect(Collectors.toList()));
-        });
-
     }
+
 
     /**
      * Accesses data from the model and hands it over to the view components
