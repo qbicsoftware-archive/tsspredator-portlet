@@ -10,6 +10,8 @@ import life.qbic.presenter.Presenter;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.lang.Double.valueOf;
+
 /**
  * This is a component where the user can set every parameter of his TSSPredator run.
  * For a better overview, the parameters are divided into parts (see below)
@@ -140,6 +142,7 @@ public class ParametersPanel extends CustomComponent {
             slider = new Slider(caption);
             slider.setMin(minValue);
             slider.setMax(maxValue);
+            slider.setValue(valueOf(maxValue));//Necessary to avoid a bug (initial value of some sliders not displayed)
             slider.setResolution(resolution);
             slider.addValueChangeListener(vce -> {
                 if (vce.isUserOriginated() &&
