@@ -116,12 +116,12 @@ public class ConfigFile {
         buildLine(builder, "minPlateauLength", Integer.toString(stepLength));
         buildLine(builder, "mode", isModeConditions ? "cond" : "align");
         buildLine(builder, "normPercentile", Double.toString(normalizationPercentile));
-        buildLine(builder, "textNormPercentile", Double.toString(enrichmentNormalizationPercentile));
+        buildLine(builder, "texNormPercentile", Double.toString(enrichmentNormalizationPercentile));
         buildLine(builder, "TSSinClusterSelectionMethod", clusterMethod);
 
 
         //TODO: These values appear in the config file, but aren't customisable yet
-        buildLine(builder, "maxGapLengthInGene", "42");
+        buildLine(builder, "maxGapLengthInGene", "500");
         buildLine(builder, "superGraphCompatibility", "igb");
         buildLine(builder, "writeNocornacFiles", "0");
 
