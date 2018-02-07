@@ -5,7 +5,7 @@ package life.qbic.model.beans;
  * Represents a Fasta file (*.fasta)
  */
 public class FastaFileBean {
-    private String name, creationDate;
+    private String name, creationDate, path;
     private int sizeInKB;
 
     @Override
@@ -35,5 +35,13 @@ public class FastaFileBean {
 
     public void setSizeInKB(int sizeInKB) {
         this.sizeInKB = sizeInKB;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

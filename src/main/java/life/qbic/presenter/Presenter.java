@@ -15,7 +15,9 @@ import life.qbic.view.panels.ConditionDataPanel;
 import life.qbic.view.panels.DataPanel;
 import life.qbic.view.panels.GenomeDataPanel;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -96,7 +98,7 @@ public class Presenter {
                     }
                 }, "")
                 .bind((ValueProvider<ConfigFile, ProjectBean>) configFile -> {
-                            return new ProjectBean(); //TODO: Return something useful here
+                            return new ProjectBean();
                         },
                         (Setter<ConfigFile, ProjectBean>) (configFile, projectBean) -> configFile.setProjectName(projectBean.getName()));
 
@@ -165,9 +167,10 @@ public class Presenter {
                     }
                 }, "")
                 .bind((ValueProvider<ConfigFile, AlignmentFileBean>) configFile -> {
-                            return new AlignmentFileBean(); //TODO: Return something useful here
+                            return new AlignmentFileBean();
                         },
-                        (Setter<ConfigFile, AlignmentFileBean>) (configFile, alignmentFileBean) -> configFile.setAlignmentFile(alignmentFileBean.getName()));
+                        //TODO: Currently writes the filepath to the config file - maybe change getPath() to getName()
+                        (Setter<ConfigFile, AlignmentFileBean>) (configFile, alignmentFileBean) -> configFile.setAlignmentFile(alignmentFileBean.getPath()));
 
     }
 
@@ -281,7 +284,8 @@ public class Presenter {
                     }
                 }, "")
                 .bind((ValueProvider<ConfigFile, FastaFileBean>) configFile -> new FastaFileBean(),
-                        (Setter<ConfigFile, FastaFileBean>) (configFile, fastaFileBean) -> configFile.setConditionFasta(fastaFileBean.getName()));
+                        //TODO: Currently writes the filepath to the config file - maybe change getPath() to getName()
+                        (Setter<ConfigFile, FastaFileBean>) (configFile, fastaFileBean) -> configFile.setConditionFasta(fastaFileBean.getPath()));
         //Alignment File -> GFF Grid
         configFileBinder.forField(view.getConditionDataPanel().getGffGrid().asSingleSelect())
                 .withValidator(annotationFileBean -> {
@@ -304,7 +308,8 @@ public class Presenter {
                     }
                 }, "")
                 .bind((ValueProvider<ConfigFile, AnnotationFileBean>) configFile -> new AnnotationFileBean(),
-                        (Setter<ConfigFile, AnnotationFileBean>) (configFile, annotationFileBean) -> configFile.setConditionGFF(annotationFileBean.getName()));
+                        //TODO: Currently writes the filepath to the config file - maybe change getPath() to getName()
+                        (Setter<ConfigFile, AnnotationFileBean>) (configFile, annotationFileBean) -> configFile.setConditionGFF(annotationFileBean.getPath()));
 
         //Bind the matching replicates combobox in the parameters panel
         //to the number of replicates comboboxes in the two data panels so the first can't exceed the latter
@@ -497,7 +502,8 @@ public class Presenter {
                         }
                     }, "")
                     .bind((ValueProvider<ConfigFile, FastaFileBean>) configFile -> new FastaFileBean(),
-                            (Setter<ConfigFile, FastaFileBean>) (configFile, fastaFileBean) -> configFile.getGenomeList().get(index).setFasta(fastaFileBean.getName()));
+                            //TODO: Currently writes the filepath to the config file - maybe change getPath() to getName()
+                            (Setter<ConfigFile, FastaFileBean>) (configFile, fastaFileBean) -> configFile.getGenomeList().get(index).setFasta(fastaFileBean.getPath()));
 
             configFileBinder.forField(genomeTab.getIdField()).asRequired("Please enter the alignment id of this genome")
                     .bind(new ValueProvider<ConfigFile, String>() {
@@ -534,7 +540,8 @@ public class Presenter {
                         }
                     }, "")
                     .bind((ValueProvider<ConfigFile, AnnotationFileBean>) configFile -> new AnnotationFileBean(),
-                            (Setter<ConfigFile, AnnotationFileBean>) (configFile, annotationFileBean) -> configFile.getGenomeList().get(index).setGff(annotationFileBean.getName()));
+                            //TODO: Currently writes the filepath to the config file - maybe change getPath() to getName()
+                            (Setter<ConfigFile, AnnotationFileBean>) (configFile, annotationFileBean) -> configFile.getGenomeList().get(index).setGff(annotationFileBean.getPath()));
         }
 
 
@@ -574,12 +581,13 @@ public class Presenter {
                     }
                 }, "")
                 .bind((ValueProvider<ConfigFile, GraphFileBean>) configFile -> {
-                            return new GraphFileBean(); //TODO: Do something useful here
+                            return new GraphFileBean();
                         }, (Setter<ConfigFile, GraphFileBean>) (configFile, graphFileBean) -> {
                             if (graphFileBean != null) {
                                 configFile.getGenomeList().get(datasetIndex)
                                         .getReplicateList().get(replicateIndex)
-                                        .setTreatedCodingStrand(graphFileBean.getName());
+                                        //TODO: Currently writes the filepath to the config file - maybe change getPath() to getName()
+                                        .setTreatedCodingStrand(graphFileBean.getPath());
                             }
                         }
                 );
@@ -610,7 +618,8 @@ public class Presenter {
                             if (graphFileBean != null) {
                                 configFile.getGenomeList().get(datasetIndex)
                                         .getReplicateList().get(replicateIndex)
-                                        .setTreatedTemplateStrand(graphFileBean.getName());
+                                        //TODO: Currently writes the filepath to the config file - maybe change getPath() to getName()
+                                        .setTreatedTemplateStrand(graphFileBean.getPath());
                             }
                         });
 
@@ -640,7 +649,8 @@ public class Presenter {
                             if (graphFileBean != null) {
                                 configFile.getGenomeList().get(datasetIndex)
                                         .getReplicateList().get(replicateIndex)
-                                        .setUntreatedCodingStrand(graphFileBean.getName());
+                                        //TODO: Currently writes the filepath to the config file - maybe change getPath() to getName()
+                                        .setUntreatedCodingStrand(graphFileBean.getPath());
                             }
                         });
 
@@ -670,7 +680,8 @@ public class Presenter {
                             if (graphFileBean != null) {
                                 configFile.getGenomeList().get(datasetIndex)
                                         .getReplicateList().get(replicateIndex)
-                                        .setUntreatedTemplateStrand(graphFileBean.getName());
+                                        //TODO: Currently writes the filepath to the config file - maybe change getPath() to getName()
+                                        .setUntreatedTemplateStrand(graphFileBean.getPath());
                             }
                         });
     }
@@ -741,6 +752,7 @@ public class Presenter {
      */
     public File produceConfigFile() {
         File file = new File(Globals.CONFIG_FILE_TMP_PATH);
+
         //Check all validators and fields that are set as required
         BinderValidationStatus<ConfigFile> validationStatus = configFileBinder.validate();
         //There will always be 'silent' errors because of non-visible fields.
@@ -750,12 +762,14 @@ public class Presenter {
         if (validationStatus.getValidationErrors().size() > silentErrors) {
             Notification.show("Your configuration couldn't be saved because there are errors (" + (validationStatus.getValidationErrors().size() - silentErrors)
                     + "). Please check the fields marked with a red '!'.");
+            return null;
         } else {
             try {
                 String configText = model.getConfigFile().toString();
                 FileWriter writer = new FileWriter(file);
                 writer.write(configText);
                 writer.close();
+
                 //Enable the download button
                 view.getDownloadButton().setEnabled(true);
 
@@ -764,8 +778,8 @@ public class Presenter {
                 //Disable the download button
                 view.getDownloadButton().setEnabled(false);
             }
+            return file;
         }
-        return file;
 
     }
 

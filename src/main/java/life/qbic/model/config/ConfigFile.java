@@ -129,8 +129,9 @@ public class ConfigFile {
     }
 
     private void buildLine(StringBuilder builder, String key, String value) {
-        if (value == null)
+        if (value == null) {
             configFileLogger.log(Level.WARNING, "Couldn't create config file! Parameter \'" + key + "\' isn't set.");
+        }
         else
             builder.append(key).append(" = ").append(value).append("\n");
     }

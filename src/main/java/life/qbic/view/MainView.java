@@ -8,7 +8,7 @@ import life.qbic.model.Globals;
 import life.qbic.presenter.Presenter;
 import life.qbic.view.panels.*;
 
-import java.io.File;
+import java.io.*;
 
 /**
  * Contains the main layout of the GUI. Its core component is an Accordion whose tabs make up the parts of the TSSPredator workflow:
@@ -34,12 +34,18 @@ public class MainView extends CustomComponent {
         setCompositionRoot(mainLayout);
     }
 
-    public void createView(){
+    public void createView() {
         buildContentAccordion();
         createConfigButton = new Button("Create Config File", (Button.ClickListener) clickEvent -> {
             File file = this.presenter.produceConfigFile();
-            downloader = new FileDownloader(new FileResource(file));
-            downloader.extend(downloadButton);
+
+            if (file != null) {
+                if (downloader != null)
+                    downloader.remove();
+                downloader = new FileDownloader(new FileResource(file));
+                downloader.extend(downloadButton);
+
+            }
         });
         downloadButton = new Button("Download Config File");
         downloadButton.setEnabled(false); //Button is not enabled until config file has been successfully created
@@ -70,8 +76,6 @@ public class MainView extends CustomComponent {
 
         contentAccordion.setWidth(100, Unit.PERCENTAGE);
     }
-
-
 
 
     public Accordion getContentAccordion() {
