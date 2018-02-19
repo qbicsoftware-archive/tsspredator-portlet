@@ -8,7 +8,7 @@ import life.qbic.model.Globals;
 import life.qbic.model.beans.AnnotationFileBean;
 import life.qbic.model.beans.FastaFileBean;
 import life.qbic.presenter.Presenter;
-import life.qbic.testing.TestData;
+import life.qbic.view.InfoBar;
 import life.qbic.view.MyGrid;
 
 import java.util.LinkedList;
@@ -31,12 +31,12 @@ public class ConditionDataPanel extends DataPanel {
     public ConditionDataPanel(Presenter presenter) {
         super(presenter);
         numberOfDatasetsBox.setCaption("Select number of Conditions");
-        fastaGrid = new MyGrid<>("Genome FASTA");
+        fastaGrid = new MyGrid<>("Dataset FASTA");
         fastaGrid.addColumn(FastaFileBean::getName).setCaption("File name");
         fastaGrid.addColumn(FastaFileBean::getCreationDate).setCaption("Creation Date");
         fastaGrid.addColumn(FastaFileBean::getSizeInKB).setCaption("Size (kB)");
         fastaGrid.addStyleName("my-file-grid");
-        gffGrid = new MyGrid<>("Genome annotation (GFF)");
+        gffGrid = new MyGrid<>("Dataset annotation (GFF)");
         gffGrid.addColumn(AnnotationFileBean::getName).setCaption("File name");
         gffGrid.addColumn(AnnotationFileBean::getCreationDate).setCaption("Creation Date");
         gffGrid.addColumn(AnnotationFileBean::getSizeInKB).setCaption("Size (kB)");

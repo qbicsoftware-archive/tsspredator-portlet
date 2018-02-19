@@ -6,6 +6,7 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import life.qbic.model.Globals;
 import life.qbic.presenter.Presenter;
+import life.qbic.view.InfoBar;
 
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -278,7 +279,7 @@ public class ParametersPanel extends CustomComponent {
         clusteringDistance = new ParameterSetter("TSS Clustering Distance", 0, 3, 0,
                 Globals.CLUSTERING_DISTANCE_TEXT, "");
 
-        crossDatasetShift = new ParameterSetter("Allowed Cross-Genome Shift", 0, 3, 0,
+        crossDatasetShift = new ParameterSetter("Allowed Cross-Dataset Shift", 0, 3, 0,
                 Globals.CROSS_DATASET_SHIFT_TEXT, "");
 
         crossReplicateShift = new ParameterSetter("Allowed Cross-Replication Shift", 0, 3, 0,

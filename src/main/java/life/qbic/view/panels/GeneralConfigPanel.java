@@ -6,10 +6,8 @@ import life.qbic.model.beans.AlignmentFileBean;
 import life.qbic.model.beans.ProjectBean;
 import life.qbic.presenter.Presenter;
 import life.qbic.testing.TestData;
+import life.qbic.view.InfoBar;
 import life.qbic.view.MyGrid;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This component has a panel where the user chooses a nameField for his project, selects the type of study,

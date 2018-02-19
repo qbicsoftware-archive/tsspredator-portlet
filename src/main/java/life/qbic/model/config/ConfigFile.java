@@ -17,7 +17,7 @@ public class ConfigFile {
     private int numberOfReplicates;
     private boolean isModeConditions;
     private String alignmentFile;
-    private ArrayList<Genome> genomeList;
+    private ArrayList<Dataset> datasetList;
     //If we choose to compare conditions, there's only one fasta and one gff file.
     private String conditionFasta, conditionGFF;
 
@@ -71,33 +71,33 @@ public class ConfigFile {
         if (isModeConditions) {
             buildLine(builder, "fasta", conditionFasta);
             buildLine(builder, "annotation", conditionGFF);
-            for (Genome genome : genomeList) {
-                buildLine(builder, "outputPrefix_" + genome.getAlignmentID(), genome.getName());
-                for (Replicate replicate : genome.getReplicateList()) {
-                    buildLine(builder, "fivePrimePlus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedCodingStrand());
-                    buildLine(builder, "fivePrimeMinus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedTemplateStrand());
-                    buildLine(builder, "normalPlus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedCodingStrand());
-                    buildLine(builder, "normalMinus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedTemplateStrand());
+            for (Dataset dataset : datasetList) {
+                buildLine(builder, "outputPrefix_" + dataset.getAlignmentID(), dataset.getName());
+                for (Replicate replicate : dataset.getReplicateList()) {
+                    buildLine(builder, "fivePrimePlus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedCodingStrand());
+                    buildLine(builder, "fivePrimeMinus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedTemplateStrand());
+                    buildLine(builder, "normalPlus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedCodingStrand());
+                    buildLine(builder, "normalMinus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedTemplateStrand());
                 }
             }
 
         } else {
-            for (Genome genome : genomeList) {
-                buildLine(builder, "genome_" + genome.getAlignmentID(), genome.getFasta());
-                buildLine(builder, "annotation_" + genome.getAlignmentID(), genome.getGff());
-                buildLine(builder, "outputPrefix_" + genome.getAlignmentID(), genome.getName());
-                for (Replicate replicate : genome.getReplicateList()) {
-                    buildLine(builder, "fivePrimePlus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedCodingStrand());
-                    buildLine(builder, "fivePrimeMinus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedTemplateStrand());
-                    buildLine(builder, "normalPlus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedCodingStrand());
-                    buildLine(builder, "normalMinus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedTemplateStrand());
+            for (Dataset dataset : datasetList) {
+                buildLine(builder, "genome_" + dataset.getAlignmentID(), dataset.getFasta());
+                buildLine(builder, "annotation_" + dataset.getAlignmentID(), dataset.getGff());
+                buildLine(builder, "outputPrefix_" + dataset.getAlignmentID(), dataset.getName());
+                for (Replicate replicate : dataset.getReplicateList()) {
+                    buildLine(builder, "fivePrimePlus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedCodingStrand());
+                    buildLine(builder, "fivePrimeMinus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedTemplateStrand());
+                    buildLine(builder, "normalPlus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedCodingStrand());
+                    buildLine(builder, "normalMinus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedTemplateStrand());
                 }
             }
 
         }
         StringBuilder idList = new StringBuilder();
-        for (Genome genome : genomeList) {
-            idList.append(genome.getAlignmentID()).append(",");
+        for (Dataset dataset : datasetList) {
+            idList.append(dataset.getAlignmentID()).append(",");
         }
         buildLine(builder, "idList", idList.toString().substring(0, idList.length() - 1));
         buildLine(builder, "allowedCompareShift", Integer.toString(allowedCrossDatasetShift));
@@ -169,12 +169,12 @@ public class ConfigFile {
         this.alignmentFile = alignmentFile;
     }
 
-    public ArrayList<Genome> getGenomeList() {
-        return genomeList;
+    public ArrayList<Dataset> getDatasetList() {
+        return datasetList;
     }
 
-    public void setGenomeList(ArrayList<Genome> genomeList) {
-        this.genomeList = genomeList;
+    public void setDatasetList(ArrayList<Dataset> datasetList) {
+        this.datasetList = datasetList;
     }
 
     public void setConditionFasta(String conditionFasta) {

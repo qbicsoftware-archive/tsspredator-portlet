@@ -2,7 +2,7 @@ package life.qbic.model;
 
 import life.qbic.model.beans.*;
 import life.qbic.model.config.ConfigFile;
-import life.qbic.model.config.Genome;
+import life.qbic.model.config.Dataset;
 import life.qbic.model.config.Replicate;
 import life.qbic.testing.TestData;
 
@@ -30,7 +30,7 @@ public class Model {
 
     public Model() {
         configFile = new ConfigFile();
-        configFile.setGenomeList(new ArrayList<>());
+        configFile.setDatasetList(new ArrayList<>());
         projectBeans = new LinkedList<>();
         alignmentFileBeans = new LinkedList<>();
         fastaFileBeans = new LinkedList<>();
@@ -53,43 +53,44 @@ public class Model {
 
     public void addDatasets(int datasetsToAdd) {
         for (int i = 0; i < datasetsToAdd; i++) {
-            Genome currentGenome = new Genome();
+            Dataset currentDataset = new Dataset();
             //IDs of conditions are set automatically
             if (configFile.isModeConditions()) {
-                currentGenome.setAlignmentID("" + (configFile.getNumberOfDatasets() - datasetsToAdd + i));
+                System.out.println("Current alignment id: " + (configFile.getNumberOfDatasets() - datasetsToAdd + i + 1));
+                currentDataset.setAlignmentID("" + (configFile.getNumberOfDatasets() - datasetsToAdd + i + 1));
             }
             //Add as many replicates as the other Genomes have
             for (int j = 0; j < configFile.getNumberOfReplicates(); j++) {
-                currentGenome.getReplicateList().add(new Replicate());
+                currentDataset.getReplicateList().add(new Replicate());
             }
-            configFile.getGenomeList().add(currentGenome);
+            configFile.getDatasetList().add(currentDataset);
         }
     }
 
     public void removeDatasets(int datasetsToRemove) {
-        int oldGenomeListSize = configFile.getGenomeList().size();
+        int oldGenomeListSize = configFile.getDatasetList().size();
         int startIndex = oldGenomeListSize - datasetsToRemove;
         for (int i = startIndex; i < oldGenomeListSize; i++)
             //Remove tail until desired size is reached
-            configFile.getGenomeList().remove(configFile.getGenomeList().size() - 1);
+            configFile.getDatasetList().remove(configFile.getDatasetList().size() - 1);
     }
 
     public void addReplicates(int replicatesToAdd) {
         for (int i = 0; i < replicatesToAdd; i++) {
-            for (Genome genome : configFile.getGenomeList()) {
-                genome.getReplicateList().add(new Replicate());
+            for (Dataset dataset : configFile.getDatasetList()) {
+                dataset.getReplicateList().add(new Replicate());
             }
         }
 
     }
 
     public void removeReplicates(int replicatesToRemove) {
-        int oldReplicateListSize = configFile.getGenomeList().get(0).getReplicateList().size();
+        int oldReplicateListSize = configFile.getDatasetList().get(0).getReplicateList().size();
         int startIndex = oldReplicateListSize - replicatesToRemove;
-        for (Genome genome : configFile.getGenomeList()) {
+        for (Dataset dataset : configFile.getDatasetList()) {
             for (int i = startIndex; i < oldReplicateListSize; i++) {
                 //Remove tail until desired size is reached
-                genome.getReplicateList().remove(genome.getReplicateList().size() - 1);
+                dataset.getReplicateList().remove(dataset.getReplicateList().size() - 1);
             }
         }
 

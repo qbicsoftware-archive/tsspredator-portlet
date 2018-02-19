@@ -1,4 +1,4 @@
-package life.qbic.view.panels;
+package life.qbic.view;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.ContentMode;

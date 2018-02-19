@@ -8,13 +8,10 @@ import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.GridDragSource;
 import com.vaadin.ui.components.grid.GridDropTarget;
 import life.qbic.model.Globals;
-import life.qbic.model.beans.AnnotationFileBean;
-import life.qbic.model.beans.FastaFileBean;
 import life.qbic.model.beans.GraphFileBean;
 import life.qbic.presenter.Presenter;
-import life.qbic.testing.TestData;
+import life.qbic.view.InfoBar;
 import life.qbic.view.MyGraphFileGrid;
-import life.qbic.view.MyGrid;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -84,12 +81,16 @@ public abstract class DataPanel extends CustomComponent {
     public void initAccordion() {
         if (this instanceof GenomeDataPanel) {
             Component initialTab = ((GenomeDataPanel) this).createGenomeTab(0);
-            datasetAccordion.addTab(initialTab, "Genome " + 1);
+            datasetAccordion.addTab(initialTab, "Dataset " + 1);
         } else {
             Component initialTab = ((ConditionDataPanel) this).createConditionTab(0);
             datasetAccordion.addTab(initialTab, "Condition " + 1);
         }
-        //Tell presenter to set up bindings
+
+        //Tell presenter to refill the grid of available graph files;
+        presenter.resetGraphFileGrid();
+        //Tell presenter to remove old bindings and set up new ones
+        presenter.clearDynamicBindings();
         presenter.initDatasetBindings(0);
         presenter.initReplicateBindings(0, 0);
 
@@ -133,7 +134,7 @@ public abstract class DataPanel extends CustomComponent {
             for (int datasetIndex = oldDatasetCount; datasetIndex < presenter.getNumberOfDatasets(); datasetIndex++) {
                 if (this instanceof GenomeDataPanel) {
                     Component currentTab = ((GenomeDataPanel) this).createGenomeTab(datasetIndex);
-                    datasetAccordion.addTab(currentTab, "Genome " + (datasetIndex + 1));
+                    datasetAccordion.addTab(currentTab, "Dataset " + (datasetIndex + 1));
                 } else {
                     Component currentTab = ((ConditionDataPanel) this).createConditionTab(datasetIndex);
                     datasetAccordion.addTab(currentTab, "Condition " + (datasetIndex + 1));

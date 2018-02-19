@@ -6,6 +6,7 @@ import life.qbic.model.Globals;
 import life.qbic.model.beans.AnnotationFileBean;
 import life.qbic.model.beans.FastaFileBean;
 import life.qbic.presenter.Presenter;
+import life.qbic.view.InfoBar;
 import life.qbic.view.MyGrid;
 
 import java.util.LinkedList;
@@ -50,12 +51,12 @@ public class GenomeDataPanel extends DataPanel {
             FormLayout genomeData = new FormLayout();
             nameField = new TextField("Name");
             idField = new TextField("Alignment ID");
-            fastaGrid = new MyGrid<>("Genome FASTA");
+            fastaGrid = new MyGrid<>("Dataset FASTA");
             fastaGrid.addColumn(FastaFileBean::getName).setCaption("File name");
             fastaGrid.addColumn(FastaFileBean::getCreationDate).setCaption("Creation Date");
             fastaGrid.addColumn(FastaFileBean::getSizeInKB).setCaption("Size (kB)");
             fastaGrid.addStyleName("my-file-grid");
-            annotationFileGrid = new MyGrid<>("Genome annotation (GFF)");
+            annotationFileGrid = new MyGrid<>("Dataset annotation (GFF)");
             annotationFileGrid.addColumn(AnnotationFileBean::getName).setCaption("File name");
             annotationFileGrid.addColumn(AnnotationFileBean::getCreationDate).setCaption("Creation Date");
             annotationFileGrid.addColumn(AnnotationFileBean::getSizeInKB).setCaption("Size (kB)");
