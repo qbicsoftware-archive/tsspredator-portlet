@@ -2,9 +2,10 @@ package life.qbic.model.beans;
 
 /**
  * @author jmueller
+ * Represents a genome annotation file (*.gff)
  */
 public class AnnotationFileBean {
-    private String name, creationDate;
+    private String name, creationDate, path;
     private int sizeInKB;
 
     @Override
@@ -34,5 +35,13 @@ public class AnnotationFileBean {
 
     public void setSizeInKB(int sizeInKB) {
         this.sizeInKB = sizeInKB;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

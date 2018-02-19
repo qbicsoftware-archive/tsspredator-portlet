@@ -1,4 +1,4 @@
-package life.qbic.view.firstImplementation;
+package life.qbic.view.panels;
 
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Grid;
@@ -8,6 +8,7 @@ import life.qbic.model.Globals;
 import life.qbic.model.beans.AnnotationFileBean;
 import life.qbic.model.beans.FastaFileBean;
 import life.qbic.presenter.Presenter;
+import life.qbic.view.InfoBar;
 import life.qbic.view.MyGrid;
 
 import java.util.LinkedList;
@@ -16,17 +17,26 @@ import java.util.List;
 public class ConditionDataPanel extends DataPanel {
     Grid<FastaFileBean> fastaGrid;
     Grid<AnnotationFileBean> gffGrid;
+    private List<FastaFileBean> fastaFileBeans = new LinkedList<>();
+    private List<AnnotationFileBean> annotationFileBeans = new LinkedList<>();
 
-
+    /**
+     * After calling the Constructor of the superclass, the components for the fasta file and the annotation file
+     * of the project are created and added to the components designed in the superclass. Unlike in the sibling class
+     * "GenomeDataPanel", only one Fasta and one GFF file are needed, so there need not be components for them in
+     * every DatasetTab.
+     *
+     * @param presenter
+     */
     public ConditionDataPanel(Presenter presenter) {
         super(presenter);
         numberOfDatasetsBox.setCaption("Select number of Conditions");
-        fastaGrid = new MyGrid<>("Genome FASTA");
+        fastaGrid = new MyGrid<>("Dataset FASTA");
         fastaGrid.addColumn(FastaFileBean::getName).setCaption("File name");
         fastaGrid.addColumn(FastaFileBean::getCreationDate).setCaption("Creation Date");
         fastaGrid.addColumn(FastaFileBean::getSizeInKB).setCaption("Size (kB)");
         fastaGrid.addStyleName("my-file-grid");
-        gffGrid = new MyGrid<>("Genome annotation (GFF)");
+        gffGrid = new MyGrid<>("Dataset annotation (GFF)");
         gffGrid.addColumn(AnnotationFileBean::getName).setCaption("File name");
         gffGrid.addColumn(AnnotationFileBean::getCreationDate).setCaption("Creation Date");
         gffGrid.addColumn(AnnotationFileBean::getSizeInKB).setCaption("Size (kB)");
@@ -35,35 +45,30 @@ public class ConditionDataPanel extends DataPanel {
                 fastaGrid, gffGrid, datasetAccordion);
         wrapperLayout.addComponents(new InfoBar(Globals.CONDITION_DATA_SETTINGS_INFO), contentLayout);
 
-        //<-- DEBUG
-        List<FastaFileBean> fastaFileBeanList = new LinkedList<>();
-        for (int i = 0; i < 10; i++) {
-            FastaFileBean bean = new FastaFileBean();
-            bean.setName("Test Fasta " + i);
-            bean.setCreationDate("01-01-01");
-            bean.setSizeInKB(42);
-            fastaFileBeanList.add(bean);
-        }
-        fastaGrid.setItems(fastaFileBeanList);
-        List<AnnotationFileBean> annotationFileBeanList = new LinkedList<>();
-        for (int i = 0; i < 10; i++) {
-            AnnotationFileBean bean = new AnnotationFileBean();
-            bean.setName("Test Annotation " + i);
-            bean.setCreationDate("01-01-01");
-            bean.setSizeInKB(42);
-            annotationFileBeanList.add(bean);
-        }
-        gffGrid.setItems(annotationFileBeanList);
-        //DEBUG -->
+        fastaGrid.setItems(fastaFileBeans);
+        gffGrid.setItems(annotationFileBeans);
     }
 
+
+    /**
+     * This class represents a tab in the DatasetAccordion when comparing conditions.
+     */
     public class ConditionTab extends DatasetTab {
         TextField nameField;
 
+        /**
+         * For a ConditionTab, only the component for its name has to be created here.
+         * The other relevant components have been added above (Constructor of ConditionDataPanel),
+         * the replicatesSheet is created in the superclass constructor and only needs to be added to the layout.
+         *
+         * @param index
+         */
         public ConditionTab(int index) {
             super(index);
             nameField = new TextField("Name");
-            this.tab.addComponents(new InfoBar(Globals.CONDITION_TAB_INFO),nameField, new Label("<b>RNA-seq graph files for this condition:</b>", ContentMode.HTML), replicatesSheet);
+            this.tab.addComponents(new InfoBar(Globals.CONDITION_TAB_INFO), nameField,
+                    new Label("<b>RNA-seq graph files for this condition:</b>", ContentMode.HTML),
+                    replicatesSheet);
 
 
         }

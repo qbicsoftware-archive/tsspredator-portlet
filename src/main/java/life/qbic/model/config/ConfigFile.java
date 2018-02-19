@@ -1,9 +1,15 @@
 package life.qbic.model.config;
 
+
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author jmueller
+ * Represents a config file. Its values are set by the presenter.
+ * The toString()-method returns the entire config file as a string.
+ * If a value is missing, a warning message is logged
  */
 public class ConfigFile {
     private String projectName;
@@ -11,7 +17,7 @@ public class ConfigFile {
     private int numberOfReplicates;
     private boolean isModeConditions;
     private String alignmentFile;
-    private ArrayList<Genome> genomeList;
+    private ArrayList<Dataset> datasetList;
     //If we choose to compare conditions, there's only one fasta and one gff file.
     private String conditionFasta, conditionGFF;
 
@@ -35,49 +41,63 @@ public class ConfigFile {
     private int utrLength;
     private int antisenseUtrLength;
 
+    private final static Logger configFileLogger = Logger.getLogger(ConfigFile.class.getName());
+
     public ConfigFile() {
     }
 
     @Override
     public String toString() {
+        /*I (jmueller) changed some lines because they contained redundant/useless information, namely
+            - 'xmfa' is only written if the user is comparing genomes
+            - 'genome_...' and 'annotation_...", which contain the paths to the fasta and gff files for each genome,
+                 are only written if the user is comparing genomes
+            - When comparing conditions, every condition has the same genome (and annotation, respectively),
+                 so only one "fasta" and one "annotation" parameter is written - these are two new parameters that
+                 don't appear in the old config files!
+          Whoever is going to connect the WebUI to the backend needs to keep this in mind and either has to adjust
+          the config file parser in the backend or revert my changes right here.
+
+        */
         StringBuilder builder = new StringBuilder();
         buildLine(builder, "projectName", projectName);
         buildLine(builder, "numberOfDatasets", Integer.toString(numberOfDatasets));
         buildLine(builder, "numReplicates", Integer.toString(numberOfReplicates));
-        if (!isModeConditions)
+        if (!isModeConditions) {
             buildLine(builder, "xmfa", alignmentFile);
+        }
         buildLine(builder, "writeGraphs", writeGraphs ? "1" : "0");
 
         if (isModeConditions) {
             buildLine(builder, "fasta", conditionFasta);
             buildLine(builder, "annotation", conditionGFF);
-            for (Genome genome : genomeList) {
-                buildLine(builder, "outputPrefix_" + genome.getAlignmentID(), genome.getName());
-                for (Replicate replicate : genome.getReplicateList()) {
-                    buildLine(builder, "fivePrimePlus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedCodingStrand());
-                    buildLine(builder, "fivePrimeMinus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedTemplateStrand());
-                    buildLine(builder, "normalPlus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedCodingStrand());
-                    buildLine(builder, "normalMinus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedTemplateStrand());
+            for (Dataset dataset : datasetList) {
+                buildLine(builder, "outputPrefix_" + dataset.getAlignmentID(), dataset.getName());
+                for (Replicate replicate : dataset.getReplicateList()) {
+                    buildLine(builder, "fivePrimePlus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedCodingStrand());
+                    buildLine(builder, "fivePrimeMinus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedTemplateStrand());
+                    buildLine(builder, "normalPlus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedCodingStrand());
+                    buildLine(builder, "normalMinus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedTemplateStrand());
                 }
             }
 
         } else {
-            for (Genome genome : genomeList) {
-                buildLine(builder, "genome_" + genome.getAlignmentID(), genome.getFasta());
-                buildLine(builder, "annotation_" + genome.getAlignmentID(), genome.getGff());
-                buildLine(builder, "outputPrefix_" + genome.getAlignmentID(), genome.getName());
-                for (Replicate replicate : genome.getReplicateList()) {
-                    buildLine(builder, "fivePrimePlus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedCodingStrand());
-                    buildLine(builder, "fivePrimeMinus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedTemplateStrand());
-                    buildLine(builder, "normalPlus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedCodingStrand());
-                    buildLine(builder, "normalMinus_" + genome.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedTemplateStrand());
+            for (Dataset dataset : datasetList) {
+                buildLine(builder, "genome_" + dataset.getAlignmentID(), dataset.getFasta());
+                buildLine(builder, "annotation_" + dataset.getAlignmentID(), dataset.getGff());
+                buildLine(builder, "outputPrefix_" + dataset.getAlignmentID(), dataset.getName());
+                for (Replicate replicate : dataset.getReplicateList()) {
+                    buildLine(builder, "fivePrimePlus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedCodingStrand());
+                    buildLine(builder, "fivePrimeMinus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getTreatedTemplateStrand());
+                    buildLine(builder, "normalPlus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedCodingStrand());
+                    buildLine(builder, "normalMinus_" + dataset.getAlignmentID() + replicate.getReplicateID(), replicate.getUntreatedTemplateStrand());
                 }
             }
 
         }
         StringBuilder idList = new StringBuilder();
-        for (Genome genome : genomeList) {
-            idList.append(genome.getAlignmentID()).append(",");
+        for (Dataset dataset : datasetList) {
+            idList.append(dataset.getAlignmentID()).append(",");
         }
         buildLine(builder, "idList", idList.toString().substring(0, idList.length() - 1));
         buildLine(builder, "allowedCompareShift", Integer.toString(allowedCrossDatasetShift));
@@ -96,12 +116,12 @@ public class ConfigFile {
         buildLine(builder, "minPlateauLength", Integer.toString(stepLength));
         buildLine(builder, "mode", isModeConditions ? "cond" : "align");
         buildLine(builder, "normPercentile", Double.toString(normalizationPercentile));
-        buildLine(builder, "textNormPercentile", Double.toString(enrichmentNormalizationPercentile));
+        buildLine(builder, "texNormPercentile", Double.toString(enrichmentNormalizationPercentile));
         buildLine(builder, "TSSinClusterSelectionMethod", clusterMethod);
 
 
         //TODO: These values appear in the config file, but aren't customisable yet
-        buildLine(builder, "maxGapLengthInGene", "42");
+        buildLine(builder, "maxGapLengthInGene", "500");
         buildLine(builder, "superGraphCompatibility", "igb");
         buildLine(builder, "writeNocornacFiles", "0");
 
@@ -109,16 +129,13 @@ public class ConfigFile {
     }
 
     private void buildLine(StringBuilder builder, String key, String value) {
-        if (value == null)
-            //TODO: Log instead of print
-            System.err.println("Couldn't create config file! Parameter \'" + key + "\' isn't set.");
+        if (value == null) {
+            configFileLogger.log(Level.WARNING, "Couldn't create config file! Parameter \'" + key + "\' isn't set.");
+        }
         else
             builder.append(key).append(" = ").append(value).append("\n");
     }
 
-    public String getProjectName() {
-        return projectName;
-    }
 
     public void setProjectName(String projectName) {
         this.projectName = projectName;
@@ -148,32 +165,20 @@ public class ConfigFile {
         isModeConditions = modeConditions;
     }
 
-    public String getAlignmentFile() {
-        return alignmentFile;
-    }
-
     public void setAlignmentFile(String alignmentFile) {
         this.alignmentFile = alignmentFile;
     }
 
-    public ArrayList<Genome> getGenomeList() {
-        return genomeList;
+    public ArrayList<Dataset> getDatasetList() {
+        return datasetList;
     }
 
-    public void setGenomeList(ArrayList<Genome> genomeList) {
-        this.genomeList = genomeList;
-    }
-
-    public String getConditionFasta() {
-        return conditionFasta;
+    public void setDatasetList(ArrayList<Dataset> datasetList) {
+        this.datasetList = datasetList;
     }
 
     public void setConditionFasta(String conditionFasta) {
         this.conditionFasta = conditionFasta;
-    }
-
-    public String getConditionGFF() {
-        return conditionGFF;
     }
 
     public void setConditionGFF(String conditionGFF) {

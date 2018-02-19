@@ -4,8 +4,10 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
+import life.qbic.model.Model;
+import life.qbic.model.config.ConfigFile;
 import life.qbic.presenter.Presenter;
-import life.qbic.view.AccordionLayoutMain;
+import life.qbic.view.MainView;
 
 
 @Theme("mytheme")
@@ -18,11 +20,10 @@ public class MyUI extends UI {
 
 
     protected void init(VaadinRequest vaadinRequest) {
-        Presenter presenter = new Presenter();
-        AccordionLayoutMain layout = new AccordionLayoutMain(presenter);
-        presenter.setView(layout);
-        presenter.initFields();
-        presenter.initBindings();
-        setContent(layout);
+        Model model = new Model();
+        MainView view = new MainView();
+        Presenter presenter = new Presenter(view, model);
+        view.setWidth(UI.getCurrent().getPage().getBrowserWindowWidth(), Unit.PIXELS);
+        setContent(view);
     }
 }

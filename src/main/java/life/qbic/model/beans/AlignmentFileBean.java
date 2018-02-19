@@ -2,9 +2,10 @@ package life.qbic.model.beans;
 
 /**
  * @author jmueller
+ * Represents an alignment file (*.xmfa)
  */
 public class AlignmentFileBean {
-    private String name, creationDate;
+    private String name, creationDate, path;
     private int sizeInKB;
 
     @Override
@@ -34,5 +35,13 @@ public class AlignmentFileBean {
 
     public void setSizeInKB(int sizeInKB) {
         this.sizeInKB = sizeInKB;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

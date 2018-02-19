@@ -15037,10 +15037,6 @@ div.v-layout.v-horizontal.v-widget {
 	background: lightblue;
 }
 
-.mytheme .v-disabled {
-	visibility: hidden;
-}
-
 .mytheme .my-navigation-layout {
 	float: left;
 	position: absolute;
@@ -15070,7 +15066,13 @@ div.v-layout.v-horizontal.v-widget {
 
 .mytheme .v-grid-row.selected > td {
 	background: none;
-	color: green;
+	color: royalblue;
+}
+
+.mytheme .parameter-setter {
+	height: 3cm;
+	margin: 0;
+	padding: 0;
 }
 
 .mytheme .my-info-bar {
@@ -15079,4 +15081,44 @@ div.v-layout.v-horizontal.v-widget {
 	padding: 6px 20px 6px 6px;
 	margin: 5px 15px 5px 20px;
 	border-right: 15px solid white;
+}
+
+.mytheme .v-tooltip {
+	background-color: white;
+	max-width: 100cm;
+	max-height: 100cm;
+	width: auto !important;
+	height: auto !important;
+	padding: 0.5cm 0.5cm;
+}
+
+.mytheme .v-tooltip-text {
+	color: black;
+	max-width: 100cm !important;
+	max-height: 100cm !important;
+	width: auto;
+	height: auto;
+}
+
+.mytheme .my-radio-button-group .v-radiobutton {
+	height: 0.75cm;
+	font-weight: bold;
+}
+
+.mytheme .prediction-parameters-layout {
+	margin: 0;
+	position: absolute;
+	right: 1cm;
+}
+
+.mytheme .non-custom-parameter {
+	opacity: 0.6;
+}
+
+.mytheme .parameter-section {
+	background-color: rgba(211, 211, 211, 0.1);
+	border: 2px solid rgba(211, 211, 211, 0.5);
+	border-radius: 8px;
+	padding: 0.5cm;
+	width: 100%;
 }

@@ -3,23 +3,22 @@ package life.qbic.view;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
-import com.vaadin.ui.Accordion;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomComponent;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
 import life.qbic.model.Globals;
 import life.qbic.presenter.Presenter;
-import life.qbic.view.firstImplementation.*;
+import life.qbic.view.panels.*;
 
-import java.io.File;
+import java.io.*;
 
 /**
- * The class {@link AccordionLayoutMain} contains the main layout of the GUI. Its core component
- * is an Accordion whose tabs are the parts of the TSSPredator workflow
+ * Contains the main layout of the GUI. Its core component is an Accordion whose tabs make up the parts of the TSSPredator workflow:
+ * - General Configuration
+ * - Data Settings
+ * - Parameter Settings
  *
  * @author jmueller
  */
-public class AccordionLayoutMain extends CustomComponent {
+public class MainView extends CustomComponent {
     private VerticalLayout mainLayout;
     private Presenter presenter;
     private Accordion contentAccordion;
@@ -30,25 +29,35 @@ public class AccordionLayoutMain extends CustomComponent {
     private GenomeDataPanel genomeDataPanel;
     private ParametersPanel parametersPanel;
 
-    public AccordionLayoutMain(Presenter presenter) {
+    public MainView() {
         this.mainLayout = new VerticalLayout();
-        this.presenter = presenter;
-        createContentAccordion();
-        createConfigButton = new Button("Create Config File", (Button.ClickListener) clickEvent -> {
-            File file = this.presenter.produceConfigFile();
-            downloader = new FileDownloader(new FileResource(file));
-            downloader.extend(downloadButton);
-        });
-        downloadButton = new Button("Download Config File");
-        loadConfigButton = new Button("Load existing configuration");
-        loadConfigButton.addClickListener(e -> {
-            //TODO: Tell presenter to start loading procedure
-        });
-        mainLayout.addComponents(contentAccordion, createConfigButton, downloadButton, loadConfigButton);
         setCompositionRoot(mainLayout);
     }
 
-    private void createContentAccordion() {
+    public void createView() {
+        buildContentAccordion();
+        createConfigButton = new Button("Create Config File", (Button.ClickListener) clickEvent -> {
+            File file = this.presenter.produceConfigFile();
+
+            if (file != null) {
+                if (downloader != null)
+                    downloader.remove();
+                downloader = new FileDownloader(new FileResource(file));
+                downloader.extend(downloadButton);
+
+            }
+        });
+        downloadButton = new Button("Download Config File");
+        downloadButton.setEnabled(false); //Button is not enabled until config file has been successfully created
+        loadConfigButton = new Button("Load existing configuration");
+        loadConfigButton.setVisible(false);
+        mainLayout.addComponents(contentAccordion, createConfigButton, downloadButton, loadConfigButton);
+    }
+
+    /**
+     * Creates the main Accordion and adds the panels to it
+     */
+    private void buildContentAccordion() {
         contentAccordion = new Accordion();
         generalConfigPanel = new GeneralConfigPanel(presenter);
 
@@ -68,20 +77,9 @@ public class AccordionLayoutMain extends CustomComponent {
         contentAccordion.setWidth(100, Unit.PERCENTAGE);
     }
 
-    public void updateDataPanelMode(boolean isConditions) {
-        //The genomeDataPanel has tab index 1, the conditionDataPanel has tab index 2
-        // in the contentAccordion
-        contentAccordion.getTab(1).setVisible(!isConditions);
-        contentAccordion.getTab(2).setVisible(isConditions);
 
-    }
-
-    public Presenter getPresenter() {
-        return presenter;
-    }
-
-    public void setPresenter(Presenter presenter) {
-        this.presenter = presenter;
+    public Accordion getContentAccordion() {
+        return contentAccordion;
     }
 
     public GeneralConfigPanel getGeneralConfigPanel() {
@@ -100,5 +98,15 @@ public class AccordionLayoutMain extends CustomComponent {
         return conditionDataPanel;
     }
 
+    public Button getDownloadButton() {
+        return downloadButton;
+    }
 
+    public Presenter getPresenter() {
+        return presenter;
+    }
+
+    public void setPresenter(Presenter presenter) {
+        this.presenter = presenter;
+    }
 }

@@ -1,4 +1,4 @@
-package life.qbic.view.firstImplementation;
+package life.qbic.view.panels;
 
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.ui.dnd.DropEffect;
@@ -10,6 +10,7 @@ import com.vaadin.ui.components.grid.GridDropTarget;
 import life.qbic.model.Globals;
 import life.qbic.model.beans.GraphFileBean;
 import life.qbic.presenter.Presenter;
+import life.qbic.view.InfoBar;
 import life.qbic.view.MyGraphFileGrid;
 
 import java.util.Collection;
@@ -20,19 +21,20 @@ import java.util.stream.IntStream;
 
 /**
  * In this abstract class, the parts of the DataPanel which are common to both
- * the genome and the condition variant of the workflow are stored.
- * The variable parts are in classes GenomeDataPanel or ConditionDataPanel, respectively.
+ * the genome and the condition variant of the workflow are defined.
+ * The particular parts are in the inheriting classes GenomeDataPanel or ConditionDataPanel, respectively.
  *
  * @author jmueller
  */
 public abstract class DataPanel extends CustomComponent {
-    Presenter presenter;
-    Panel dataPanel;
+    private Presenter presenter;
+    private Panel dataPanel;
     Layout contentLayout, wrapperLayout;
     Accordion datasetAccordion;
     ComboBox<Integer> numberOfDatasetsBox;
     ComboBox<Integer> numberOfReplicatesBox;
-    //Button setNumbers;
+    private List<GraphFileBean> graphFileBeans = new LinkedList<>();
+
 
     public DataPanel(Presenter presenter) {
         dataPanel = designPanel();
@@ -40,6 +42,15 @@ public abstract class DataPanel extends CustomComponent {
         this.presenter = presenter;
     }
 
+    /**
+     * The panel is designed as a Vertical Layout "wrapperLayout".
+     * The common parts that are initialized here are two comboboxes where the user can select how many
+     * datasets and replicates he has and the Accordion where the datasets are listed.
+     * The particular contents of the wrapperLayout are not added here, but in the constructors of
+     * GenomeDataPanel and ConditionDataPanel
+     *
+     * @return
+     */
     private Panel designPanel() {
         Panel panel = new Panel();
         contentLayout = new FormLayout();
@@ -64,17 +75,22 @@ public abstract class DataPanel extends CustomComponent {
     }
 
     /**
-     * The accordion is initialized with one dataset (genome/condition) and one replicate
+     * The dataset accordion is always initialized with one dataset (genome/condition) and one replicate.
+     * Initialization happens at startup as well as every time the user switches between modes.
      */
     public void initAccordion() {
-        if(this instanceof  GenomeDataPanel){
+        if (this instanceof GenomeDataPanel) {
             Component initialTab = ((GenomeDataPanel) this).createGenomeTab(0);
-            datasetAccordion.addTab(initialTab, "Genome " + 1);
-        }else{
+            datasetAccordion.addTab(initialTab, "Dataset " + 1);
+        } else {
             Component initialTab = ((ConditionDataPanel) this).createConditionTab(0);
             datasetAccordion.addTab(initialTab, "Condition " + 1);
         }
-        //Tell presenter to set up bindings
+
+        //Tell presenter to refill the grid of available graph files;
+        presenter.resetGraphFileGrid();
+        //Tell presenter to remove old bindings and set up new ones
+        presenter.clearDynamicBindings();
         presenter.initDatasetBindings(0);
         presenter.initReplicateBindings(0, 0);
 
@@ -82,9 +98,8 @@ public abstract class DataPanel extends CustomComponent {
 
 
     /**
-     * The genomes/conditions are organized as tabs in an Accordion. When the user changes
-     * the number of genomes/conditions or replicates, this Accordion has to be updated,
-     * which happens here
+     * When the user changes the number of datasets or replicates, the Accordion has to be updated,
+     * which happens in this method.
      */
     public void updateAccordion(int oldDatasetCount, int oldReplicateCount) {
         //Adjust number of replicate tabs for each dataset tab
@@ -101,7 +116,7 @@ public abstract class DataPanel extends CustomComponent {
                      replicateIndex < presenter.getNumberOfReplicates();
                      replicateIndex++) {
                     Component replicateTab = new ReplicateTab(datasetIndex, replicateIndex);
-                    currentReplicateSheet.addTab(replicateTab, "Replicate " + createReplicateID(replicateIndex));
+                    currentReplicateSheet.addTab(replicateTab, "Replicate " + createAlphabeticalIndex(replicateIndex));
                     presenter.initReplicateBindings(datasetIndex, replicateIndex);
                 }
             } else {
@@ -117,10 +132,10 @@ public abstract class DataPanel extends CustomComponent {
         if (datasetDelta > 0) {
             //Add new dataset tabs
             for (int datasetIndex = oldDatasetCount; datasetIndex < presenter.getNumberOfDatasets(); datasetIndex++) {
-                if(this instanceof GenomeDataPanel){
+                if (this instanceof GenomeDataPanel) {
                     Component currentTab = ((GenomeDataPanel) this).createGenomeTab(datasetIndex);
-                    datasetAccordion.addTab(currentTab, "Genome " + (datasetIndex + 1));
-                }else{
+                    datasetAccordion.addTab(currentTab, "Dataset " + (datasetIndex + 1));
+                } else {
                     Component currentTab = ((ConditionDataPanel) this).createConditionTab(datasetIndex);
                     datasetAccordion.addTab(currentTab, "Condition " + (datasetIndex + 1));
 
@@ -143,12 +158,18 @@ public abstract class DataPanel extends CustomComponent {
     }
 
     /**
-     * This class is extended by GenomeTab in GenomeDataPanel and ConditionTab in ConditionDataPanel.
+     * This class abstractly represents one tab in the dataset accordion.
+     * It is extended by GenomeTab in GenomeDataPanel and ConditionTab in ConditionDataPanel.
      */
     public abstract class DatasetTab extends CustomComponent {
         VerticalLayout tab;
         TabSheet replicatesSheet;
 
+        /**
+         * Every dataset tab contains a replicate tab for each of its replicates.
+         *
+         * @param index
+         */
         public DatasetTab(int index) {
             tab = new VerticalLayout();
             replicatesSheet = new TabSheet();
@@ -156,7 +177,7 @@ public abstract class DataPanel extends CustomComponent {
                  replicateIndex < presenter.getNumberOfReplicates();
                  replicateIndex++) {
                 ReplicateTab replicateTab = new ReplicateTab(index, replicateIndex);
-                replicatesSheet.addTab(replicateTab, "Replicate " + createReplicateID(replicateIndex));
+                replicatesSheet.addTab(replicateTab, "Replicate " + createAlphabeticalIndex(replicateIndex));
             }
             setCompositionRoot(tab);
         }
@@ -168,15 +189,26 @@ public abstract class DataPanel extends CustomComponent {
     }
 
     /**
-     * This inner class represents a replicate tab in the dataset accordion.
-     * It works for both the genome and the condition variants.
+     * This class represents a replicate tab in the dataset accordion.
+     * It's the same for both the genome and the condition variants, so it doesn't have to be abstract like its container,
+     * the DatasetTab
      */
     public class ReplicateTab extends CustomComponent {
         VerticalLayout layout;
         MyGraphFileGrid treatedCoding, treatedTemplate, untreatedCoding, untreatedTemplate;
-        Grid<GraphFileBean> graphFileGrid;
+        private Grid<GraphFileBean> graphFileGrid;
+
+
         private GraphFileBean draggedItem;
 
+        /**
+         * A replicateTab consists of a vertical layout containing the grid of available graph files and
+         * the four MyGraphFileGrids for the four strands of the replicate
+         * After creating the former, drag and drop is implemented.
+         *
+         * @param datasetIndex
+         * @param replicateIndex
+         */
         public ReplicateTab(int datasetIndex, int replicateIndex) {
             layout = new VerticalLayout();
 
@@ -190,7 +222,7 @@ public abstract class DataPanel extends CustomComponent {
             untreatedTemplate.setCaptionAsHtml(true);
 
             graphFileGrid = new Grid<>("Available Graph Files");
-            float graphFileGridWidth = 600;
+            float graphFileGridWidth = 900;
             graphFileGrid.setWidth(graphFileGridWidth, Unit.PIXELS);
             graphFileGrid.addColumn(GraphFileBean::getName)
                     .setCaption("File name")
@@ -206,6 +238,10 @@ public abstract class DataPanel extends CustomComponent {
             graphFileGrid.addStyleName("my-file-grid");
             graphFileGrid.sort(graphFileGrid.getColumn("Name"));
 
+            graphFileGrid.setItems(graphFileBeans);
+
+
+            //Drag and drop implementation
             setupDragSource(graphFileGrid);
             setupDragSource(treatedCoding);
             setupDragSource(treatedTemplate);
@@ -229,9 +265,8 @@ public abstract class DataPanel extends CustomComponent {
             });
 
 
-
-
-            presenter.updateReplicateID(datasetIndex, replicateIndex, createReplicateID(replicateIndex));
+            //Layout the components
+            presenter.updateReplicateID(datasetIndex, replicateIndex, createAlphabeticalIndex(replicateIndex));
             VerticalLayout treatedLayout = new VerticalLayout(treatedCoding, treatedTemplate);
             VerticalLayout untreatedLayout = new VerticalLayout(untreatedCoding, untreatedTemplate);
             HorizontalLayout gridLayout = new HorizontalLayout(treatedLayout, untreatedLayout);
@@ -242,20 +277,14 @@ public abstract class DataPanel extends CustomComponent {
             layout.setComponentAlignment(graphFileGrid, Alignment.BOTTOM_CENTER);
             setCompositionRoot(layout);
 
-            //<-- DEBUG
-            List<GraphFileBean> graphFileBeanList = new LinkedList<>();
-            for (int i = 0; i < 10; i++) {
-                GraphFileBean gfb = new GraphFileBean();
-                gfb.setName("Test Graph File " + i);
-                gfb.setCreationDate("01-01-01");
-                gfb.setSizeInKB(42);
-                graphFileBeanList.add(gfb);
-            }
-            graphFileGrid.setItems(graphFileBeanList);
-            //DEBUG -->
 
         }
 
+        /**
+         * Makes the rows of a GraphFileBean-Grid draggable
+         *
+         * @param grid
+         */
         private void setupDragSource(Grid<GraphFileBean> grid) {
             GridDragSource<GraphFileBean> dragSource = new GridDragSource<>(grid);
             dragSource.setEffectAllowed(EffectAllowed.MOVE);
@@ -263,6 +292,11 @@ public abstract class DataPanel extends CustomComponent {
                     setDraggedItemInGraphFileGrids((GraphFileBean) event.getDraggedItems().toArray()[0]));
         }
 
+        /**
+         * Notifies the four MyGraphFileGrids of the item currently being dragged
+         *
+         * @param draggedItem
+         */
         private void setDraggedItemInGraphFileGrids(GraphFileBean draggedItem) {
             this.draggedItem = draggedItem;
             treatedCoding.setDraggedItem(draggedItem);
@@ -270,6 +304,7 @@ public abstract class DataPanel extends CustomComponent {
             untreatedCoding.setDraggedItem(draggedItem);
             untreatedTemplate.setDraggedItem(draggedItem);
         }
+        //Getters
 
         public MyGraphFileGrid getTreatedCoding() {
             return treatedCoding;
@@ -286,10 +321,14 @@ public abstract class DataPanel extends CustomComponent {
         public MyGraphFileGrid getUntreatedTemplate() {
             return untreatedTemplate;
         }
-    }
+
+        public Grid<GraphFileBean> getGraphFileGrid() {
+            return graphFileGrid;
+        }
+    } //End of inner class ReplicateTab
 
     /**
-     * Converts the numerical replicateIndex to an 'abc-value' as follows:
+     * Converts a numerical replicateIndex to an alphabetical value as follows:
      * 0 -> a
      * 1 -> b
      * ...
@@ -298,7 +337,7 @@ public abstract class DataPanel extends CustomComponent {
      * 27 -> ab
      * ...
      */
-    String createReplicateID(int replicateIndex) {
+    private String createAlphabeticalIndex(int replicateIndex) {
         StringBuilder builder = new StringBuilder();
         while (replicateIndex >= 26) {
             builder.append((char) (97 + (replicateIndex % 26)));
@@ -318,11 +357,6 @@ public abstract class DataPanel extends CustomComponent {
         return numberOfReplicatesBox;
     }
 
-    public TextField getGenomeNameField(int index) {
-
-        return null;
-    }
-
     public Accordion getDatasetAccordion() {
         return datasetAccordion;
     }
@@ -331,4 +365,7 @@ public abstract class DataPanel extends CustomComponent {
         return (DatasetTab) datasetAccordion.getTab(index).getComponent();
     }
 
+    public List<GraphFileBean> getGraphFileBeans() {
+        return graphFileBeans;
+    }
 }
